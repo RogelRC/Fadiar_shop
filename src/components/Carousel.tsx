@@ -12,16 +12,32 @@ import {
     CarouselPrevious,
 } from "@/components/ui/carousel";
 
+// Definir el tipo para los productos
+interface Product {
+    img: string;
+    id: number;
+    brand: string;
+    carrito: number;
+    commissions: [number, number, string][];
+    count: number;
+    description: string;
+    model: string;
+    name: string;
+    onWait: number;
+    prices: [number, number, string][];
+    regret: number;
+}
+
 function Slider() {
-    // Estado para almacenar las imágenes
-    const [images, setImages] = React.useState([]);
+    // Estado para almacenar las imágenes (ahora es un array de strings)
+    const [images, setImages] = React.useState<string[]>([]);
 
     // Hacer la petición al cargar el componente
     React.useEffect(() => {
         fetch("https://app.fadiar.com/api/inventory")
             .then(response => response.json())  // Convertir la respuesta en JSON
-            .then(data => {
-                const imageUrls = data.products.map(product => {
+            .then((data: { products: Product[] }) => {
+                const imageUrls = data.products.map((product: Product) => {
                     return "https://app.fadiar.com/api/" + product.img;  // Concatenar la base de la URL con la imagen
                 });
                 setImages(imageUrls);  // Establecer las URLs de las imágenes en el estado
@@ -47,7 +63,7 @@ function Slider() {
                                     <CardContent className="p-0 flex items-center justify-center h-[70vh]">
                                         <div className="relative w-full h-full"> {/* Ajusta el tamaño aquí */}
                                             <Image
-                                                loader={() => image}
+                                                loader={() => image}  // Usar el loader para especificar la URL
                                                 src={image}
                                                 alt={`Image ${index}`}
                                                 layout="fill"
