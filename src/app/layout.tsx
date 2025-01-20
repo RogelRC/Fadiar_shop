@@ -4,7 +4,7 @@ import "./globals.css";
 import Header from "@/components/Header";
 import Slideshow from "@/components/Slideshow";
 import Info from "@/components/Info"
-import Carousel from "@/components/Slider";
+import Slider from "@/components/Carousel";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -31,6 +31,7 @@ export default function RootLayout() {
             <Header/>
             <Slideshow/>
             <Info/>
+            <Slider/>
 
         </div>
         </body>
