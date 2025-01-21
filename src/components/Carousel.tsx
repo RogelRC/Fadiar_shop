@@ -48,20 +48,21 @@ function Slider() {
     }, []);  // Solo se ejecuta una vez, cuando el componente se monta
 
     return (
-        <div className="flex justify-center items-center w-[100vw] h-[100vh] pt-20">
+        <div className="flex justify-center w-[100vw] h-[90vh] p-10">
             <Carousel
                 opts={{
                     loop: true,
+                    dragFree: true
                 }}
-                className="flex justify-items-center"
+                className="flex"
             >
-                <CarouselContent className="flex-1 w-[80vw]">
+                <CarouselContent className="flex-1 w-[80vw] h-full">
                     {images.map((image, index) => (
                         <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
                             <div className="flex-1">
                                 <Card className="border-0">
-                                    <CardContent className="p-0 flex items-center justify-center h-[70vh]">
-                                        <div className="relative w-full h-full"> {/* Ajusta el tamaño aquí */}
+                                    <CardContent className="p-0 flex h-[75vh] flex-col">
+                                        <div className="relative w-full h-4/5"> {/* Ajusta el tamaño aquí */}
                                             <Image
                                                 loader={() => image}  // Usar el loader para especificar la URL
                                                 src={image}
@@ -70,6 +71,12 @@ function Slider() {
                                                 objectFit="contain"
                                                 className="rounded-md"
                                             />
+                                        </div>
+                                        <div className="mt-6 p-2 text-center">
+                                            <p className="text-sm text-gray-500">
+                                                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                                                Integer nec odio. Praesent libero. Sed cursus ante dapibus diam.
+                                            </p>
                                         </div>
                                     </CardContent>
                                 </Card>
