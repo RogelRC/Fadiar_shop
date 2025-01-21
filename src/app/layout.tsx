@@ -31,6 +31,7 @@ export default function RootLayout() {
             <Header/>
             <Slideshow/>
             <Info/>
+            <div className="w-full h-2 bg-[#022953]"></div>
             <Slider/>
 
         </div>

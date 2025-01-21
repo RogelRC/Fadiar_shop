@@ -3,7 +3,7 @@
 import * as React from "react";
 import Image from "next/image";
 
-import { Card, CardContent } from "@/components/ui/card";
+import {Card, CardContent} from "@/components/ui/card";
 import {
     Carousel,
     CarouselContent,
@@ -48,7 +48,7 @@ function Slider() {
     }, []);  // Solo se ejecuta una vez, cuando el componente se monta
 
     return (
-        <div className="flex justify-center w-[100vw] h-[90vh] p-10">
+        <div className="flex justify-center w-[100vw] h-[90vh] items-center bg-[#F3F4F6]">
             <Carousel
                 opts={{
                     loop: true,
@@ -76,6 +76,11 @@ function Slider() {
                                             <p className="text-sm text-gray-500">
                                                 Lorem ipsum dolor sit amet, consectetur adipiscing elit.
                                                 Integer nec odio. Praesent libero. Sed cursus ante dapibus diam.
+                                                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Assumenda
+                                                maiores perferendis porro repellendus sunt! Corporis culpa debitis,
+                                                dolorum, enim, eos eveniet iusto nemo quidem repudiandae sunt ullam
+                                                voluptate. Maxime, similique!
+                                                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aperiam autem
                                             </p>
                                         </div>
                                     </CardContent>
@@ -84,8 +89,8 @@ function Slider() {
                         </CarouselItem>
                     ))}
                 </CarouselContent>
-                <CarouselPrevious />
-                <CarouselNext />
+                <CarouselPrevious/>
+                <CarouselNext/>
             </Carousel>
         </div>
     );
