@@ -29,23 +29,20 @@ interface Product {
 }
 
 function Slider() {
-    // Estado para almacenar las imágenes (ahora es un array de strings)
-    const [images, setImages] = React.useState<string[]>([]);
+    // Estado para almacenar los productos
+    const [products, setProducts] = React.useState<Product[]>([]);
 
     // Hacer la petición al cargar el componente
     React.useEffect(() => {
         fetch("https://app.fadiar.com/api/inventory")
-            .then(response => response.json())  // Convertir la respuesta en JSON
+            .then(response => response.json()) // Convertir la respuesta en JSON
             .then((data: { products: Product[] }) => {
-                const imageUrls = data.products.map((product: Product) => {
-                    return "https://app.fadiar.com/api/" + product.img;  // Concatenar la base de la URL con la imagen
-                });
-                setImages(imageUrls);  // Establecer las URLs de las imágenes en el estado
+                setProducts(data.products); // Establecer los productos en el estado
             })
             .catch(error => {
-                console.error('Error fetching data:', error);  // Manejar errores
+                console.error('Error fetching data:', error); // Manejar errores
             });
-    }, []);  // Solo se ejecuta una vez, cuando el componente se monta
+    }, []); // Solo se ejecuta una vez, cuando el componente se monta
 
     return (
         <div className="flex justify-center w-[100vw] h-[90vh] items-center bg-[#F3F4F6]">
@@ -57,30 +54,25 @@ function Slider() {
                 className="flex"
             >
                 <CarouselContent className="flex-1 w-[80vw] h-full">
-                    {images.map((image, index) => (
+                    {products.map((product, index) => (
                         <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
                             <div className="flex-1">
-                                <Card className="border-0">
-                                    <CardContent className="p-0 flex h-[75vh] flex-col">
+                                <Card className="border-0 m-5">
+                                    <CardContent className="p-0 flex h-[60vh] flex-col">
                                         <div className="relative w-full h-4/5"> {/* Ajusta el tamaño aquí */}
                                             <Image
-                                                loader={() => image}  // Usar el loader para especificar la URL
-                                                src={image}
+                                                loader={() => "https://app.fadiar.com/api/" + product.img} // Usar el loader para especificar la URL
+                                                src={"https://app.fadiar.com/api/" + product.img}
                                                 alt={`Image ${index}`}
                                                 layout="fill"
                                                 objectFit="contain"
-                                                className="rounded-md"
+                                                className="rounded-lg overflow-hidden"
                                             />
                                         </div>
                                         <div className="mt-6 p-2 text-center">
-                                            <p className="text-sm text-gray-500">
-                                                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                                                Integer nec odio. Praesent libero. Sed cursus ante dapibus diam.
-                                                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Assumenda
-                                                maiores perferendis porro repellendus sunt! Corporis culpa debitis,
-                                                dolorum, enim, eos eveniet iusto nemo quidem repudiandae sunt ullam
-                                                voluptate. Maxime, similique!
-                                                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aperiam autem
+                                            {/* Reemplazar el texto de Lorem Ipsum por los datos del producto */}
+                                            <p className="text-sm text-[#022953]">
+                                                {product.name} - {product.prices[0][1]} {product.prices[0][2]}
                                             </p>
                                         </div>
                                     </CardContent>
