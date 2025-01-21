@@ -5,6 +5,7 @@ import Header from "@/components/Header";
 import Slideshow from "@/components/Slideshow";
 import Info from "@/components/Info"
 import Slider from "@/components/Carousel";
+import Topsells from "@/components/Topsells";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -33,6 +34,7 @@ export default function RootLayout() {
             <Info/>
             <div className="w-full h-2 bg-[#022953]"></div>
             <Slider/>
+            <Topsells/>
 
         </div>
         </body>
