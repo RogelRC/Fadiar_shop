@@ -95,8 +95,8 @@ function BestSellers() {
 
                 {/* Detalle del producto seleccionado (sección derecha) */}
                 {selectedProduct && (
-                    <div className="w-2/3 flex flex-col items-center">
-                        <div className="relative w-full h-64">
+                    <div className="w-2/3 flex flex-col items-center text-lg text-white">
+                        <div className="relative w-full h-64 rounded">
                             <Image
                                 loader={() =>
                                     "https://app.fadiar.com/api/" + selectedProduct.img
@@ -109,18 +109,7 @@ function BestSellers() {
                             />
                         </div>
                         <h2 className="mt-6 text-2xl font-bold">{selectedProduct.name}</h2>
-                        <p className="text-gray-600 mt-2">{selectedProduct.description}</p>
-                        <ul className="mt-4 space-y-2">
-                            <li>
-                                <strong>Modelo:</strong> {selectedProduct.model}
-                            </li>
-                            <li>
-                                <strong>Marca:</strong> {selectedProduct.brand}
-                            </li>
-                            <li>
-                                <strong>Ventas:</strong> {selectedProduct.sells}
-                            </li>
-                        </ul>
+                        <p className="mt-2 px-14 pt-10 justify-center">{selectedProduct.description}</p>
                     </div>
                 )}
             </div>
