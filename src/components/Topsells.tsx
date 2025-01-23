@@ -56,68 +56,74 @@ function BestSellers() {
     }
 
     return (
-        <div className="flex gap-6 w-full h-[90vh]  bg-amber-300">
-            {/* Lista de productos (sección izquierda) */}
-            <Tabs defaultValue={products[0]?.id.toString()} className="w-1/3 h-full">
-                <TabsList className="flex flex-col gap-4 w-full h-full">
-                    {products.map((product) => (
-                        <TabsTrigger
-                            key={product.id}
-                            value={product.id.toString()}
-                            className="flex items-center gap-2 p-2 hover:bg-gray-200 w-1/2 h-full"
-                            onClick={() => setSelectedProduct(product)}
-                        >
-                            <div className="flex justify-center w-full">
-                                <span className="text-sm font-medium">{product.name}</span>
-                            </div>
-                            <div className="flex bg-amber-700 w-full h-full">
-                                <Image
-                                    loader={() =>
-                                        "https://app.fadiar.com/api/" + product.img
-                                    }
-                                    src={"https://app.fadiar.com/api/" + product.img}
-                                    alt={product.name}
-                                    width={50}
-                                    height={50}
-                                    className="rounded"
-                                />
-                            </div>
+        <div className="flex flex-col gap-6 w-full h-[88vh] bg-[#022953]">
+            <div className="flex w-full h-[10vh] bg-amber-700">
+                Header
+            </div>
+            <div className="flex w-full h-[80vh]">
+                {/* Lista de productos (sección izquierda) */}
+                <Tabs defaultValue={products[0]?.id.toString()} className="w-2/3 h-full">
+                    <TabsList className="flex flex-col gap-4 w-full h-full">
+                        {products.map((product) => (
+                            <TabsTrigger
+                                key={product.id}
+                                value={product.id.toString()}
+                                className="flex items-center gap-2 p-2 hover:bg-gray-200 w-1/2 h-full"
+                                onClick={() => setSelectedProduct(product)}
+                            >
+                                <div className="flex justify-center w-full">
+                                    <span className="text-sm font-medium">{product.name}</span>
+                                </div>
+                                <div className="flex w-1/2 h-full">
+                                    <Image
+                                        loader={() =>
+                                            "https://app.fadiar.com/api/" + product.img
+                                        }
+                                        src={"https://app.fadiar.com/api/" + product.img}
+                                        alt={product.name}
+                                        width={50}
+                                        height={50}
+                                        className="rounded-lg w-full"
+                                    />
+                                </div>
 
-                        </TabsTrigger>
-                    ))}
-                </TabsList>
-            </Tabs>
+                            </TabsTrigger>
+                        ))}
+                    </TabsList>
+                </Tabs>
 
-            {/* Detalle del producto seleccionado (sección derecha) */}
-            {selectedProduct && (
-                <div className="w-2/3 flex flex-col items-center">
-                    <div className="relative w-full h-64">
-                        <Image
-                            loader={() =>
-                                "https://app.fadiar.com/api/" + selectedProduct.img
-                            }
-                            src={"https://app.fadiar.com/api/" + selectedProduct.img}
-                            alt={selectedProduct.name}
-                            layout="fill"
-                            objectFit="contain"
-                            className="rounded-lg"
-                        />
+                {/* Detalle del producto seleccionado (sección derecha) */}
+                {selectedProduct && (
+                    <div className="w-2/3 flex flex-col items-center">
+                        <div className="relative w-full h-64">
+                            <Image
+                                loader={() =>
+                                    "https://app.fadiar.com/api/" + selectedProduct.img
+                                }
+                                src={"https://app.fadiar.com/api/" + selectedProduct.img}
+                                alt={selectedProduct.name}
+                                layout="fill"
+                                objectFit="contain"
+                                className="rounded-lg"
+                            />
+                        </div>
+                        <h2 className="mt-6 text-2xl font-bold">{selectedProduct.name}</h2>
+                        <p className="text-gray-600 mt-2">{selectedProduct.description}</p>
+                        <ul className="mt-4 space-y-2">
+                            <li>
+                                <strong>Modelo:</strong> {selectedProduct.model}
+                            </li>
+                            <li>
+                                <strong>Marca:</strong> {selectedProduct.brand}
+                            </li>
+                            <li>
+                                <strong>Ventas:</strong> {selectedProduct.sells}
+                            </li>
+                        </ul>
                     </div>
-                    <h2 className="mt-6 text-2xl font-bold">{selectedProduct.name}</h2>
-                    <p className="text-gray-600 mt-2">{selectedProduct.description}</p>
-                    <ul className="mt-4 space-y-2">
-                        <li>
-                            <strong>Modelo:</strong> {selectedProduct.model}
-                        </li>
-                        <li>
-                            <strong>Marca:</strong> {selectedProduct.brand}
-                        </li>
-                        <li>
-                            <strong>Ventas:</strong> {selectedProduct.sells}
-                        </li>
-                    </ul>
-                </div>
-            )}
+                )}
+            </div>
+
         </div>
     );
 }
