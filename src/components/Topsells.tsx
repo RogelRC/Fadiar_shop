@@ -56,7 +56,8 @@ function BestSellers() {
     }
 
     return (
-        <div className="flex flex-col gap-6 w-full h-[88vh] bg-[#022953]">
+        <div className="flex flex-col gap-6 w-full h-[88vh] bg-[#022953] relative">
+            <div className="absolute top-[10%] bottom-[10%] left-1/2 w-[1px] bg-white z-1000"></div>
             <div className="flex w-full h-[10vh] bg-amber-700">
                 Header
             </div>
