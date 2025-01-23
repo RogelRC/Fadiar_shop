@@ -63,12 +63,12 @@ function BestSellers() {
             <div className="flex w-full h-[80vh]">
                 {/* Lista de productos (sección izquierda) */}
                 <Tabs defaultValue={products[0]?.id.toString()} className="w-2/3 h-full">
-                    <TabsList className="flex flex-col gap-4 w-full h-full">
+                    <TabsList className="flex flex-col gap-4 w-full h-full bg-[#022953]">
                         {products.map((product) => (
                             <TabsTrigger
                                 key={product.id}
                                 value={product.id.toString()}
-                                className="flex items-center gap-2 p-2 hover:bg-gray-200 w-1/2 h-full"
+                                className="flex items-center gap-2 p-2 w-1/2 h-full"
                                 onClick={() => setSelectedProduct(product)}
                             >
                                 <div className="flex justify-center w-full">
