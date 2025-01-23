@@ -56,28 +56,33 @@ function BestSellers() {
     }
 
     return (
-        <div className="flex gap-6 w-[90vw] mx-auto my-10 bg-[#F3F4F6] p-6 rounded-lg shadow-md">
+        <div className="flex gap-6 w-full h-[90vh]  bg-amber-300">
             {/* Lista de productos (sección izquierda) */}
-            <Tabs defaultValue={products[0]?.id.toString()} className="w-1/3">
-                <TabsList className="flex flex-col gap-4">
+            <Tabs defaultValue={products[0]?.id.toString()} className="w-1/3 h-full">
+                <TabsList className="flex flex-col gap-4 w-full h-full">
                     {products.map((product) => (
                         <TabsTrigger
                             key={product.id}
                             value={product.id.toString()}
-                            className="flex items-center gap-2 p-2 rounded-lg hover:bg-gray-200"
+                            className="flex items-center gap-2 p-2 hover:bg-gray-200 w-1/2 h-full"
                             onClick={() => setSelectedProduct(product)}
                         >
-                            <Image
-                                loader={() =>
-                                    "https://app.fadiar.com/api/" + product.img
-                                }
-                                src={"https://app.fadiar.com/api/" + product.img}
-                                alt={product.name}
-                                width={50}
-                                height={50}
-                                className="rounded"
-                            />
-                            <span className="text-sm font-medium">{product.name}</span>
+                            <div className="flex justify-center w-full">
+                                <span className="text-sm font-medium">{product.name}</span>
+                            </div>
+                            <div className="flex bg-amber-700 w-full h-full">
+                                <Image
+                                    loader={() =>
+                                        "https://app.fadiar.com/api/" + product.img
+                                    }
+                                    src={"https://app.fadiar.com/api/" + product.img}
+                                    alt={product.name}
+                                    width={50}
+                                    height={50}
+                                    className="rounded"
+                                />
+                            </div>
+
                         </TabsTrigger>
                     ))}
                 </TabsList>
