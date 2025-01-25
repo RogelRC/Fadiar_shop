@@ -64,7 +64,7 @@ function TopSells() {
              }}
         >
 
-            <div className="flex absolute top-[10%] bottom-[10%] left-1/2 w-[1px] bg-white z-1000"></div>
+            <div className="flex absolute top-[15%] bottom-[5%] left-1/2 w-[1px] bg-white z-1000"></div>
             <div className="flex w-full h-[10vh] px-14 pt-2 text-white font-bold">
                 <h1 className="flex w-full h-full text-5xl">Productos</h1>
                 <h3 className="flex w-full h-full justify-end">Ver más {">"}</h3>
@@ -77,11 +77,11 @@ function TopSells() {
                             <TabsTrigger
                                 key={product.id}
                                 value={product.id.toString()}
-                                className="flex items-center gap-2 p-2 w-1/2 h-full"
+                                className="flex items-center gap-2 p-2 w-1/2 h-full group"
                                 onClick={() => setSelectedProduct(product)}
                             >
                                 <div className="flex justify-center w-full">
-                                    <span className="text-sm font-medium">{product.name}</span>
+                                    <span className="text-lg font-bold text-white group-data-[state=active]:text-[#022953]">{product.name}</span>
                                 </div>
                                 <div className="flex w-1/2 h-full">
                                     <Image
@@ -104,7 +104,7 @@ function TopSells() {
                 {/* Detalle del producto seleccionado (sección derecha) */}
                 {selectedProduct && (
                     <div className="w-2/3 flex flex-col items-center text-lg text-white">
-                        <div className="relative w-full h-64 rounded">
+                        <div className="relative w-64 h-64 rounded-2xl overflow-hidden">
                             <Image
                                 loader={() =>
                                     "https://app.fadiar.com/api/" + selectedProduct.img
@@ -112,8 +112,7 @@ function TopSells() {
                                 src={"https://app.fadiar.com/api/" + selectedProduct.img}
                                 alt={selectedProduct.name}
                                 layout="fill"
-                                objectFit="contain"
-                                className="rounded-lg"
+                                className="rounded-lg object-contain"
                             />
                         </div>
                         <h2 className="mt-6 text-2xl font-bold">{selectedProduct.name}</h2>
