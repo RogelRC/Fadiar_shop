@@ -37,8 +37,7 @@ function Info() {
             <div className="flex w-full h-2/3 justify-center items-center">
                 <div className="hidden lg:flex relative w-1/2 h-full justify-center items-center">
                     <Image
-                        loader={() => "https://app.fadiar.com/api/images/_Split_2_T.jpg"}
-                        src="https://app.fadiar.com/api/images/_Split_2_T.jpg"
+                        src="/objetivos.jpeg"
                         alt="Image"
                         width={350}
                         height={200}

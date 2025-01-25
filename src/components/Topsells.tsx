@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Image from "next/image";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {Tabs, TabsList, TabsTrigger} from "@/components/ui/tabs";
 
 // Definir el tipo para los productos
 interface Product {
@@ -17,7 +17,7 @@ interface Product {
     sells: number;
 }
 
-function BestSellers() {
+function TopSells() {
     const [products, setProducts] = React.useState<Product[]>([]);
     const [selectedProduct, setSelectedProduct] = React.useState<Product | null>(
         null
@@ -30,7 +30,7 @@ function BestSellers() {
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ count: 4 }), // Parámetro count para obtener los 4 productos más vendidos
+            body: JSON.stringify({count: 4}), // Parámetro count para obtener los 4 productos más vendidos
         })
             .then((response) => response.json()) // Convertir la respuesta en JSON
             .then((data) => {
@@ -56,7 +56,14 @@ function BestSellers() {
     }
 
     return (
-        <div className="flex flex-col gap-6 w-full h-[88vh] bg-[#022953] relative">
+        <div className="flex flex-col gap-6 w-full h-[88vh] relative"
+             style={{
+                 backgroundImage: "url('/background.jpeg')", // Ruta a la imagen en public
+                 backgroundSize: "cover",
+                 backgroundPosition: "center",
+             }}
+        >
+
             <div className="flex absolute top-[10%] bottom-[10%] left-1/2 w-[1px] bg-white z-1000"></div>
             <div className="flex w-full h-[10vh] px-14 pt-2 text-white font-bold">
                 <h1 className="flex w-full h-full text-5xl">Productos</h1>
@@ -65,7 +72,7 @@ function BestSellers() {
             <div className="flex w-full h-[80vh]">
                 {/* Lista de productos (sección izquierda) */}
                 <Tabs defaultValue={products[0]?.id.toString()} className="w-2/3 h-full">
-                    <TabsList className="flex flex-col gap-4 w-full h-full bg-[#022953]">
+                    <TabsList className="flex flex-col gap-4 w-full h-full bg-transparent">
                         {products.map((product) => (
                             <TabsTrigger
                                 key={product.id}
@@ -119,4 +126,4 @@ function BestSellers() {
     );
 }
 
-export default BestSellers;
+export default TopSells;
