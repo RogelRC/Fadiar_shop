@@ -39,7 +39,7 @@ function Info() {
                     <Image
                         src="/objetivos.jpeg"
                         alt="Image"
-                        width={350}
+                        width={500}
                         height={200}
                         className="rounded-lg"
                     />

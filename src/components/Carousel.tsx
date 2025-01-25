@@ -71,7 +71,7 @@ function Slider() {
                                         </div>
                                         <div className="mt-6 p-2 text-center">
                                             {/* Reemplazar el texto de Lorem Ipsum por los datos del producto */}
-                                            <p className="text-sm text-[#022953]">
+                                            <p className="text-sm font-bold text-[#022953]">
                                                 {product.name} - {product.prices[0][1]} {product.prices[0][2]}
                                             </p>
                                         </div>
