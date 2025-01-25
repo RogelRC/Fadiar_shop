@@ -56,7 +56,7 @@ function Header() {
 
                 {/* Navigation Menu */}
                 <nav className="flex gap-6 mx-2 font-bold">
-                    <Link href="/" className="hover:text-blue-500">Inicio</Link>
+                    <Link href="/home" className="hover:text-blue-500">Inicio</Link>
                     <Link href="/productos" className="hover:text-blue-500">Productos</Link>
                 </nav>
             </div>
