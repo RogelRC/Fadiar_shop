@@ -58,14 +58,16 @@ function Header() {
 
                 {/* Navigation Menu */}
                 <nav className="flex gap-6 mx-2 font-bold">
-                    <Link href="/" className="hover:text-blue-500"
-                          onClick={(e) => {
-                              e.preventDefault();
-                              window.scrollTo({
-                                  top: 0,
-                                  behavior: 'smooth'
-                              });
-                          }}>Inicio</Link>
+                    <Link
+                        href="/"
+                        className="hover:text-blue-500"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            window.scrollTo({
+                                top: 0,
+                                behavior: 'smooth'
+                            });
+                        }}>Inicio</Link>
                     <Link href="/productos" className="hover:text-blue-500">Productos</Link>
                 </nav>
             </div>
