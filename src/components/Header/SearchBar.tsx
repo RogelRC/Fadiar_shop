@@ -50,7 +50,25 @@ export default function SearchBar() {
                 placeholder="Buscar productos..."
                 value={searchQuery}
                 onChange={handleInputChange}
-                className="bg-transparent border-transparent border-b-2 border-b-gray-300 rounded-none focus-visible:ring-0 focus-visible:border-b-blue-500 pr-10 text-white placeholder:text-gray-400"
+                className="
+        bg-transparent
+        border-0
+        border-b-2
+        border-b-gray-300
+        rounded-none
+        focus:ring-0
+        focus:border-b-blue-500
+        focus-visible:ring-0
+        focus-visible:border-b-blue-500
+        pr-10
+        text-white
+        placeholder:text-gray-400
+        outline-none
+        focus:outline-none
+        focus-visible:outline-none
+        shadow-none
+        ring-offset-0
+    "
             />
             <Search className="h-5 w-5 absolute right-0 text-gray-400" />
         </div>
