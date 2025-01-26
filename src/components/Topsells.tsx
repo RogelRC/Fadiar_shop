@@ -81,7 +81,8 @@ function TopSells() {
                                 onClick={() => setSelectedProduct(product)}
                             >
                                 <div className="flex justify-center w-full">
-                                    <span className="text-lg font-bold text-white group-data-[state=active]:text-[#022953]">{product.name}</span>
+                                    <span
+                                        className="text-lg font-bold text-white group-data-[state=active]:text-[#022953]">{product.name}</span>
                                 </div>
                                 <div className="flex w-1/2 h-full">
                                     <Image
