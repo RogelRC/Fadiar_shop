@@ -47,122 +47,108 @@ export default function Topsells() {
         fetchProducts();
     }, []);
 
-    // Función para extraer los 6 datos principales de la descripción
-    const getProductSpecs = (description: string) => {
+    const parseDescription = (description: string) => {
         return description.split('\n')
             .filter(line => line.startsWith("- "))
-            .map(line => line.replace("- ", "").trim())
-            .slice(0, 6);
+            .map(line => line.replace("- ", "").trim());
     };
 
     return (
-        <section className="relative py-20 bg-[url('/background.jpeg')] bg-cover bg-center">
+        <section className="relative h-screen bg-[url('/background.jpeg')] bg-cover bg-center">
             <div className="absolute inset-0 bg-black/40" />
 
-            <div className="relative container mx-auto px-4 z-10">
-                <div className="flex justify-between items-center mb-12">
-                    <h2 className="text-4xl font-bold text-white">
-                        Productos Destacados
-                    </h2>
-                    <Link
-                        href="/productos"
-                        className="text-white hover:text-blue-300 transition-colors"
-                    >
-                        Ver todos →
-                    </Link>
-                </div>
+            <div className="relative h-full flex flex-col">
+                <div className="container mx-auto px-4 flex-grow flex flex-col">
+                    {/* Header */}
+                    <div className="py-8 flex justify-between items-center">
+                        <h1 className="text-3xl font-bold text-white">Productos</h1>
+                        <Link href="/productos" className="text-white/80 hover:text-white transition-colors">
+                            Ver más →
+                        </Link>
+                    </div>
 
-                <div className="grid grid-cols-[1fr_2fr] gap-0 border-l border-white/20">
-                    <Tabs
-                        orientation="vertical"
-                        className="h-[600px] border-r border-white/20"
-                        defaultValue={products[0]?.id.toString()}
-                    >
-                        <TabsList className="flex flex-col h-full bg-transparent gap-0 pr-2">
-                            {products.map((product, index) => (
-                                <TabsTrigger
-                                    key={product.id}
-                                    value={product.id.toString()}
-                                    className="w-full h-32 bg-transparent rounded-none border-b border-white/20
-                                    data-[state=active]:bg-white data-[state=active]:text-[#022953]
-                                    transition-all group"
-                                    onClick={() => setSelectedProduct(product)}
-                                >
-                                    <div className="flex items-center gap-4 w-full px-4">
-                                        <div className="relative h-20 w-20 flex-shrink-0">
+                    {/* Contenido principal */}
+                    <div className="flex-grow grid lg:grid-cols-[300px_1fr] gap-8 pb-8">
+                        {/* Lista de productos */}
+                        <div className="overflow-y-auto pr-4">
+                            <Tabs orientation="vertical" defaultValue={products[0]?.id.toString()}>
+                                <TabsList className="flex flex-col bg-transparent gap-2">
+                                    {products.map((product) => (
+                                        <TabsTrigger
+                                            key={product.id}
+                                            value={product.id.toString()}
+                                            className="w-full p-4 text-left bg-white/5 rounded-lg
+                                            data-[state=active]:bg-white data-[state=active]:text-[#022953]
+                                            hover:bg-white/10 transition-all border border-white/10"
+                                            onClick={() => setSelectedProduct(product)}
+                                        >
+                                            <div>
+                                                <p className="font-medium">{product.name}</p>
+                                                <p className="text-sm text-white/60 mt-1">{product.model}</p>
+                                            </div>
+                                        </TabsTrigger>
+                                    ))}
+                                </TabsList>
+                            </Tabs>
+                        </div>
+
+                        {/* Detalles del producto */}
+                        {selectedProduct && (
+                            <div className="bg-white/5 backdrop-blur-sm rounded-xl p-6 flex flex-col h-[calc(100vh-200px)]">
+                                <div className="flex-grow overflow-y-auto">
+                                    {/* Encabezado */}
+                                    <div className="mb-8">
+                                        <h2 className="text-2xl font-bold text-white">{selectedProduct.name}</h2>
+                                        <p className="text-white/60">{selectedProduct.model}</p>
+                                    </div>
+
+                                    {/* Contenido */}
+                                    <div className="grid lg:grid-cols-2 gap-8">
+                                        {/* Imagen */}
+                                        <div className="relative h-64">
                                             <Image
                                                 loader={customLoader}
-                                                src={`https://app.fadiar.com/api/${product.img}`}
-                                                alt={product.name}
+                                                src={`https://app.fadiar.com/api/${selectedProduct.img}`}
+                                                alt={selectedProduct.name}
                                                 fill
                                                 className="object-contain"
                                                 sizes="(max-width: 768px) 100vw, 50vw"
                                             />
                                         </div>
-                                        <div className="text-left space-y-1">
-                                            <span className="text-lg font-bold block group-data-[state=active]:text-[#022953]">
-                                                {product.name}
-                                            </span>
-                                            <span className="text-sm text-white/80 group-data-[state=active]:text-[#022953]/80">
-                                                {product.model}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </TabsTrigger>
-                            ))}
-                        </TabsList>
-                    </Tabs>
 
-                    {selectedProduct && (
-                        <div className="bg-white/5 backdrop-blur-sm p-8 h-[600px] flex flex-col">
-                            <div className="grid grid-cols-2 gap-8 flex-grow">
-                                <div className="space-y-8">
-                                    <div className="relative h-60 w-full">
-                                        <Image
-                                            loader={customLoader}
-                                            src={`https://app.fadiar.com/api/${selectedProduct.img}`}
-                                            alt={selectedProduct.name}
-                                            fill
-                                            className="object-contain"
-                                            sizes="(max-width: 768px) 100vw, 50vw"
-                                        />
-                                    </div>
-
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div className="p-4 bg-white/10 rounded-lg">
-                                            <p className="text-sm text-white/60">Marca</p>
-                                            <p className="text-white font-bold">{selectedProduct.brand}</p>
-                                        </div>
-                                        <div className="p-4 bg-white/10 rounded-lg">
-                                            <p className="text-sm text-white/60">Modelo</p>
-                                            <p className="text-white font-bold">{selectedProduct.model}</p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="flex flex-col gap-8">
-                                    <div className="space-y-4">
-                                        <h3 className="text-2xl font-bold text-white">
-                                            Especificaciones Clave
-                                        </h3>
-                                        <div className="grid grid-cols-1 gap-4">
-                                            {getProductSpecs(selectedProduct.description).map((spec, index) => (
-                                                <div key={index} className="flex items-center gap-2">
-                                                    <div className="w-2 h-2 bg-blue-400 rounded-full flex-shrink-0" />
-                                                    <p className="text-sm text-white/80">{spec}</p>
+                                        {/* Especificaciones */}
+                                        <div className="space-y-6">
+                                            <div className="bg-white/10 p-6 rounded-lg">
+                                                <h3 className="text-lg font-semibold text-white mb-4">Propiedades</h3>
+                                                <div className="grid grid-cols-1 gap-3">
+                                                    {parseDescription(selectedProduct.description)
+                                                        .slice(0, 6)
+                                                        .map((spec, index) => (
+                                                            <div key={index} className="flex items-start gap-3">
+                                                                <div className="w-2 h-2 bg-blue-400 rounded-full mt-2 flex-shrink-0" />
+                                                                <p className="text-sm text-white/80">{spec}</p>
+                                                            </div>
+                                                        ))}
                                                 </div>
-                                            ))}
-                                        </div>
-                                    </div>
+                                            </div>
 
-                                    <div className="mt-auto p-4 bg-white/10 rounded-lg">
-                                        <p className="text-sm text-white/60">Unidades vendidas</p>
-                                        <p className="text-3xl font-bold text-blue-400">{selectedProduct.sells}</p>
+                                            {/* Detalles técnicos */}
+                                            <div className="grid grid-cols-2 gap-4">
+                                                <div className="bg-white/10 p-4 rounded-lg">
+                                                    <p className="text-sm text-white/60 mb-1">Marca</p>
+                                                    <p className="text-white font-medium">{selectedProduct.brand}</p>
+                                                </div>
+                                                <div className="bg-white/10 p-4 rounded-lg">
+                                                    <p className="text-sm text-white/60 mb-1">Vendidos</p>
+                                                    <p className="text-white font-medium">{selectedProduct.sells}</p>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    )}
+                        )}
+                    </div>
                 </div>
             </div>
         </section>
