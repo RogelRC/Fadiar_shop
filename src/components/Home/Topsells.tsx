@@ -23,6 +23,7 @@ const customLoader = ({ src, width, quality }: { src: string; width: number; qua
 export default function TopSells() {
     const [products, setProducts] = useState<Product[]>([]);
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+    const [isExpanded, setIsExpanded] = useState(false);
 
     useEffect(() => {
         fetch("https://app.fadiar.com/api/mas_vendidos", {
@@ -79,7 +80,10 @@ export default function TopSells() {
                                 key={product.id}
                                 value={product.id.toString()}
                                 className="flex items-center gap-4 p-2 w-full h-36 group"
-                                onClick={() => setSelectedProduct(product)}
+                                onClick={() => {
+                                    setSelectedProduct(product);
+                                    setIsExpanded(false);
+                                }}
                             >
                                 <div className="flex justify-center w-1/2">
                                     <span className="text-lg font-bold text-white group-data-[state=active]:text-[#022953]">
@@ -113,14 +117,48 @@ export default function TopSells() {
                             />
                         </div>
                         <h2 className="mt-6 text-2xl font-bold">{selectedProduct.name}</h2>
-                        <p className="mt-2 px-14 pt-10 text-center whitespace-pre-line">
-                            {selectedProduct.description
-                                .replace(/• /g, "\n")
-                                .split('\n')
-                                .slice(0, 6)
-                                .join('\n')}
-                            {selectedProduct.description.split('\n').length > 6 && '...'}
-                        </p>
+                        <div className="mt-2 px-14 pt-10 relative w-full">
+                            <div className="grid grid-cols-2 gap-x-8 text-left font-bold">
+                                {/* Columna izquierda */}
+                                <div className="space-y-4">
+                                    {selectedProduct.description
+                                        .replace(/• /g, "\n")
+                                        .split('\n')
+                                        .filter((line, index) => isExpanded || index < 6)
+                                        .slice(0, Math.ceil((isExpanded ? selectedProduct.description.split('\n').length : 6) / 2))
+                                        .map((line, index) => (
+                                            <div key={index} className="flex items-start gap-2">
+                                                <span className="text-white shrink-0">•</span>
+                                                <span>{line}</span>
+                                            </div>
+                                        ))}
+                                </div>
+
+                                {/* Columna derecha */}
+                                <div className="space-y-4">
+                                    {selectedProduct.description
+                                        .replace(/• /g, "\n")
+                                        .split('\n')
+                                        .filter((line, index) => isExpanded || index < 6)
+                                        .slice(Math.ceil((isExpanded ? selectedProduct.description.split('\n').length : 6) / 2))
+                                        .map((line, index) => (
+                                            <div key={index} className="flex items-start gap-2">
+                                                <span className="text-white shrink-0">•</span>
+                                                <span>{line}</span>
+                                            </div>
+                                        ))}
+                                </div>
+                            </div>
+
+                            {!isExpanded && selectedProduct.description.split('\n').length > 6 && (
+                                <span
+                                    className="absolute bottom-0 right-0 cursor-pointer text-blue-300 hover:text-blue-400"
+                                    onClick={() => setIsExpanded(true)}
+                                >
+                                    ...
+                                </span>
+                            )}
+                        </div>
                     </div>
                 )}
             </div>
