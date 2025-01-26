@@ -1,156 +1,129 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import * as React from "react";
 import Image from "next/image";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import Link from "next/link";
+import {Tabs, TabsList, TabsTrigger} from "@/components/ui/tabs";
 
+// Definir el tipo para los productos
 interface Product {
-    id: number;
-    name: string;
     img: string;
-    description: string;
+    id: number;
     brand: string;
+    count: number;
+    description: string;
     model: string;
+    name: string;
+    regret: number;
     sells: number;
 }
 
-const customLoader = ({ src, width, quality }: { src: string; width: number; quality?: number }) => {
-    return `${src}?w=${width}&q=${quality || 75}`;
-};
+function TopSells() {
+    const [products, setProducts] = React.useState<Product[]>([]);
+    const [selectedProduct, setSelectedProduct] = React.useState<Product | null>(
+        null
+    );
 
-export default function Topsells() {
-    const [products, setProducts] = useState<Product[]>([]);
-    const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-
-    useEffect(() => {
-        const fetchProducts = async () => {
-            try {
-                const response = await fetch("https://app.fadiar.com/api/mas_vendidos", {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ count: 4 }),
-                });
-
-                const data = await response.json();
-                setProducts(data);
-                if (data.length > 0) {
-                    setSelectedProduct(data[0]);
+    // Hacer la petición al cargar el componente
+    React.useEffect(() => {
+        fetch("https://app.fadiar.com/api/mas_vendidos", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({count: 4}), // Parámetro count para obtener los 4 productos más vendidos
+        })
+            .then((response) => response.json()) // Convertir la respuesta en JSON
+            .then((data) => {
+                if (Array.isArray(data)) {
+                    // Si el servidor devuelve un array directamente
+                    setProducts(data);
+                    setSelectedProduct(data[0] || null); // Establecer el primer producto o null
+                } else if (data?.products && Array.isArray(data.products)) {
+                    // Si el servidor devuelve un objeto con `products`
+                    setProducts(data.products);
+                    setSelectedProduct(data.products[0] || null);
+                } else {
+                    console.error("Formato de respuesta inesperado:", data);
                 }
-            } catch (error) {
-                console.error("Error fetching products:", error);
-            }
-        };
-
-        fetchProducts();
+            })
+            .catch((error) => {
+                console.error("Error fetching data:", error); // Manejar errores
+            });
     }, []);
 
-    const parseDescription = (description: string) => {
-        return description.split('\n')
-            .filter(line => line.startsWith("- "))
-            .map(line => line.replace("- ", "").trim());
-    };
+    if (products.length === 0) {
+        return <div className="text-center">Cargando productos...</div>;
+    }
 
     return (
-        <section className="relative h-screen bg-[url('/background.jpeg')] bg-cover bg-center">
-            <div className="absolute inset-0 bg-black/40" />
+        <div className="flex flex-col gap-6 w-full h-[88vh] relative"
+             style={{
+                 backgroundImage: "url('/background.jpeg')", // Ruta a la imagen en public
+                 backgroundSize: "cover",
+                 backgroundPosition: "center",
+             }}
+        >
 
-            <div className="relative h-full flex flex-col">
-                <div className="container mx-auto px-4 flex-grow flex flex-col">
-                    {/* Header */}
-                    <div className="py-8 flex justify-between items-center">
-                        <h1 className="text-3xl font-bold text-white">Productos</h1>
-                        <Link href="/productos" className="text-white/80 hover:text-white transition-colors">
-                            Ver más →
-                        </Link>
-                    </div>
-
-                    {/* Contenido principal */}
-                    <div className="flex-grow grid lg:grid-cols-[300px_1fr] gap-8 pb-8">
-                        {/* Lista de productos */}
-                        <div className="overflow-y-auto pr-4">
-                            <Tabs orientation="vertical" defaultValue={products[0]?.id.toString()}>
-                                <TabsList className="flex flex-col bg-transparent gap-2">
-                                    {products.map((product) => (
-                                        <TabsTrigger
-                                            key={product.id}
-                                            value={product.id.toString()}
-                                            className="w-full p-4 text-left bg-white/5 rounded-lg
-                                            data-[state=active]:bg-white data-[state=active]:text-[#022953]
-                                            hover:bg-white/10 transition-all border border-white/10"
-                                            onClick={() => setSelectedProduct(product)}
-                                        >
-                                            <div>
-                                                <p className="font-medium">{product.name}</p>
-                                                <p className="text-sm text-white/60 mt-1">{product.model}</p>
-                                            </div>
-                                        </TabsTrigger>
-                                    ))}
-                                </TabsList>
-                            </Tabs>
-                        </div>
-
-                        {/* Detalles del producto */}
-                        {selectedProduct && (
-                            <div className="bg-white/5 backdrop-blur-sm rounded-xl p-6 flex flex-col h-[calc(100vh-200px)]">
-                                <div className="flex-grow overflow-y-auto">
-                                    {/* Encabezado */}
-                                    <div className="mb-8">
-                                        <h2 className="text-2xl font-bold text-white">{selectedProduct.name}</h2>
-                                        <p className="text-white/60">{selectedProduct.model}</p>
-                                    </div>
-
-                                    {/* Contenido */}
-                                    <div className="grid lg:grid-cols-2 gap-8">
-                                        {/* Imagen */}
-                                        <div className="relative h-64">
-                                            <Image
-                                                loader={customLoader}
-                                                src={`https://app.fadiar.com/api/${selectedProduct.img}`}
-                                                alt={selectedProduct.name}
-                                                fill
-                                                className="object-contain"
-                                                sizes="(max-width: 768px) 100vw, 50vw"
-                                            />
-                                        </div>
-
-                                        {/* Especificaciones */}
-                                        <div className="space-y-6">
-                                            <div className="bg-white/10 p-6 rounded-lg">
-                                                <h3 className="text-lg font-semibold text-white mb-4">Propiedades</h3>
-                                                <div className="grid grid-cols-1 gap-3">
-                                                    {parseDescription(selectedProduct.description)
-                                                        .slice(0, 6)
-                                                        .map((spec, index) => (
-                                                            <div key={index} className="flex items-start gap-3">
-                                                                <div className="w-2 h-2 bg-blue-400 rounded-full mt-2 flex-shrink-0" />
-                                                                <p className="text-sm text-white/80">{spec}</p>
-                                                            </div>
-                                                        ))}
-                                                </div>
-                                            </div>
-
-                                            {/* Detalles técnicos */}
-                                            <div className="grid grid-cols-2 gap-4">
-                                                <div className="bg-white/10 p-4 rounded-lg">
-                                                    <p className="text-sm text-white/60 mb-1">Marca</p>
-                                                    <p className="text-white font-medium">{selectedProduct.brand}</p>
-                                                </div>
-                                                <div className="bg-white/10 p-4 rounded-lg">
-                                                    <p className="text-sm text-white/60 mb-1">Vendidos</p>
-                                                    <p className="text-white font-medium">{selectedProduct.sells}</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-                    </div>
-                </div>
+            <div className="flex absolute top-[15%] bottom-[5%] left-1/2 w-[1px] bg-white z-1000"></div>
+            <div className="flex w-full h-[10vh] px-14 pt-2 text-white font-bold">
+                <h1 className="flex w-full h-full text-5xl">Productos</h1>
+                <h3 className="flex w-full h-full justify-end">Ver más {">"}</h3>
             </div>
-        </section>
+            <div className="flex w-full h-[80vh]">
+                {/* Lista de productos (sección izquierda) */}
+                <Tabs defaultValue={products[0]?.id.toString()} className="w-2/3 h-full">
+                    <TabsList className="flex flex-col gap-4 w-full h-full bg-transparent">
+                        {products.map((product) => (
+                            <TabsTrigger
+                                key={product.id}
+                                value={product.id.toString()}
+                                className="flex items-center gap-2 p-2 w-1/2 h-full group"
+                                onClick={() => setSelectedProduct(product)}
+                            >
+                                <div className="flex justify-center w-full">
+                                    <span
+                                        className="text-lg font-bold text-white group-data-[state=active]:text-[#022953]">{product.name}</span>
+                                </div>
+                                <div className="flex w-1/2 h-full">
+                                    <Image
+                                        loader={() =>
+                                            "https://app.fadiar.com/api/" + product.img
+                                        }
+                                        src={"https://app.fadiar.com/api/" + product.img}
+                                        alt={product.name}
+                                        width={50}
+                                        height={50}
+                                        className="rounded-lg w-full"
+                                    />
+                                </div>
+
+                            </TabsTrigger>
+                        ))}
+                    </TabsList>
+                </Tabs>
+
+                {/* Detalle del producto seleccionado (sección derecha) */}
+                {selectedProduct && (
+                    <div className="w-2/3 flex flex-col items-center text-lg text-white">
+                        <div className="relative w-64 h-64 rounded-2xl overflow-hidden">
+                            <Image
+                                loader={() =>
+                                    "https://app.fadiar.com/api/" + selectedProduct.img
+                                }
+                                src={"https://app.fadiar.com/api/" + selectedProduct.img}
+                                alt={selectedProduct.name}
+                                layout="fill"
+                                className="rounded-lg object-contain"
+                            />
+                        </div>
+                        <h2 className="mt-6 text-2xl font-bold">{selectedProduct.name}</h2>
+                        <p className="mt-2 px-14 pt-10 justify-center">{selectedProduct.description}</p>
+                    </div>
+                )}
+            </div>
+
+        </div>
     );
 }
+
+export default TopSells;
