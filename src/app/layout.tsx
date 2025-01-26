@@ -1,42 +1,33 @@
-import type {Metadata} from "next";
-import {Geist, Geist_Mono} from "next/font/google";
+import { Geist, Geist_Mono } from "next/font/google";
+import type { Metadata } from "next";
 import "./globals.css";
-import Header from "@/components/Header";
-import Slideshow from "@/components/Slideshow";
-import Info from "@/components/Info"
-import Slider from "@/components/Carousel";
-import Topsells from "@/components/Topsells";
+import Header from "@/components/Header/Header";
 
 const geistSans = Geist({
-    variable: "--font-geist-sans",
     subsets: ["latin"],
+    variable: "--font-geist-sans"
 });
 
 const geistMono = Geist_Mono({
-    variable: "--font-geist-mono",
     subsets: ["latin"],
+    variable: "--font-geist-mono"
 });
 
 export const metadata: Metadata = {
-    title: "Fadiar",
-    description: "Tienda online",
+    title: "Fadiar | Soluciones Industriales",
+    description: "Distribuidor líder en herramientas industriales",
 };
 
-export default function RootLayout() {
+export default function RootLayout({
+                                       children,
+                                   }: {
+    children: React.ReactNode;
+}) {
     return (
-        <html lang="en">
-        <body
-            className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-        >
-        <div className="flex flex-col pt-[10vh]">
-            <Header/>
-            <Slideshow/>
-            <Info/>
-            <div className="w-full h-2 bg-[#022953]"></div>
-            <Slider/>
-            <Topsells/>
-
-        </div>
+        <html lang="es" className={`${geistSans.variable} ${geistMono.variable}`}>
+        <body className="min-h-screen bg-white antialiased">
+        <Header />
+        <main className="pt-[10vh]">{children}</main>
         </body>
         </html>
     );
