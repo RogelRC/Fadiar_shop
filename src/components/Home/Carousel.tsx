@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
-import { motion, useMotionValue } from "framer-motion";
+import { motion, useMotionValue, animate } from "framer-motion";
 
 interface Product {
     id: number;
@@ -16,8 +16,8 @@ export default function Carousel() {
     const [products, setProducts] = useState<Product[]>([]);
     const x = useMotionValue(0);
     const containerRef = useRef<HTMLDivElement>(null);
-    const [dragConstraints, setDragConstraints] = useState({ left: 0, right: 0 });
-
+    const [itemWidth, setItemWidth] = useState(0);
+    const [clonedProducts, setClonedProducts] = useState<Product[]>([]);
     useEffect(() => {
         const fetchProducts = async () => {
             try {
@@ -33,11 +33,37 @@ export default function Carousel() {
     }, []);
 
     useEffect(() => {
-        if (containerRef.current && products.length > 0) {
-            const width = containerRef.current.scrollWidth - containerRef.current.offsetWidth;
-            setDragConstraints({ left: -width, right: 0 });
+        if (products.length > 0) {
+            setClonedProducts([...products, ...products, ...products]);
         }
     }, [products]);
+
+    useEffect(() => {
+        if (containerRef.current && products.length > 0) {
+            const containerWidth = containerRef.current.offsetWidth;
+            const itemCount = containerWidth / (window.innerWidth * 0.8);
+            setItemWidth(containerWidth / itemCount);
+        }
+    }, [products]);
+
+    const handleDragEnd = (_e: PointerEvent, { offset, velocity }: { offset: { x: number }; velocity: { x: number } }) => {
+        const newX = x.get() + offset.x;
+        const totalWidth = products.length * itemWidth;
+        const targetX = newX + velocity.x * 50; // Aumentamos el impulso
+
+        animate(x, targetX, {
+            type: "inertia",
+            power: 0.8, // Más impulso
+            timeConstant: 200,
+            bounceStiffness: 500,
+            bounceDamping: 50,
+            onComplete: () => {
+                const currentX = x.get();
+                const wrappedX = ((currentX % totalWidth) + totalWidth) % totalWidth;
+                x.set(wrappedX - totalWidth);
+            }
+        });
+    };
 
     if (products.length === 0) return <div className="h-96 bg-gray-100 animate-pulse" />;
 
@@ -54,23 +80,31 @@ export default function Carousel() {
                         className="flex gap-8"
                         style={{ x }}
                         drag="x"
-                        dragConstraints={dragConstraints}
-                        dragTransition={{ bounceStiffness: 150, bounceDamping: 30 }}
+                        dragElastic={0.2} // Elasticidad reducida para mejor control
+                        dragMomentum={true} // Habilitar momentum
+                        onDragEnd={handleDragEnd}
+                        dragTransition={{ power: 0.1, timeConstant: 200 }} // Transición más fluida
                     >
-                        {products.map((product) => (
+                        {clonedProducts.map((product, index) => (
                             <div
-                                key={product.id}
+                                key={`${product.id}-${index}`}
                                 className="min-w-[80vw] sm:min-w-[60vw] md:min-w-[40vw] lg:min-w-[30vw] p-4"
                             >
-                                <div className="bg-gray-50 rounded-xl p-6 hover:shadow-lg transition-shadow">
-                                    <div className="relative aspect-square mb-6">
+                                <div
+                                    className="bg-gray-50 rounded-xl p-6 hover:shadow-lg transition-shadow"
+                                    onPointerDown={(e) => e.stopPropagation()} // Evitar arrastre en contenido
+                                >
+                                    <div
+                                        className="relative aspect-square mb-6 touch-pan-y" // Permitir scroll vertical
+                                        style={{ touchAction: 'pan-y' }} // Prioridad para scroll vertical
+                                    >
                                         <Image
                                             src={`https://app.fadiar.com/api/${product.img}`}
                                             alt={product.name}
                                             fill
-                                            className="object-contain"
+                                            className="object-contain pointer-events-none" // Deshabilitar interacciones
                                             sizes="(max-width: 768px) 80vw, (max-width: 1024px) 40vw, 30vw"
-                                            priority={product.id === products[0].id}
+                                            priority={index < 3}
                                         />
                                     </div>
                                     <h3 className="text-xl font-semibold mb-2">{product.name}</h3>
