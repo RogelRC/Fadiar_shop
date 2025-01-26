@@ -4,6 +4,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 
 interface Product {
     id: number;
@@ -22,6 +23,7 @@ interface Currency {
 }
 
 export default function ProductosPage() {
+    const searchParams = useSearchParams();
     const [products, setProducts] = useState<Product[]>([]);
     const [currencies, setCurrencies] = useState<Currency[]>([]);
     const [selectedCurrency, setSelectedCurrency] = useState("USD");
@@ -30,9 +32,10 @@ export default function ProductosPage() {
     const [minPrice, setMinPrice] = useState(0);
     const [maxPrice, setMaxPrice] = useState(1000);
     const [availabilityFilter, setAvailabilityFilter] = useState<"all" | "available" | "out">("all");
-    const [searchTerm, setSearchTerm] = useState("");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+
+    const searchTerm = searchParams.get('search') || '';
 
     useEffect(() => {
         const fetchData = async () => {
@@ -41,7 +44,6 @@ export default function ProductosPage() {
                 if (!response.ok) throw new Error("Error al cargar los productos");
 
                 const data = await response.json();
-
                 setProducts(data.products);
                 setCurrencies(data.currencys.currencys);
                 setLoading(false);
@@ -56,7 +58,7 @@ export default function ProductosPage() {
 
     useEffect(() => {
         setMinPrice(0);
-        setMaxPrice(selectedCurrency === "CUP" ? 9999999999 : 9999999);
+        setMaxPrice(selectedCurrency === "CUP" ? 100000 : 1000);
     }, [selectedCurrency]);
 
     const getPriceInCurrency = (prices: Array<[number, number, string]>) => {
@@ -125,16 +127,7 @@ export default function ProductosPage() {
         <section className="min-h-screen bg-gray-50 py-8">
             <div className="container mx-auto px-4">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-                    <div className="flex flex-col gap-2">
-                        <h1 className="text-3xl font-bold text-[#022953]">Catálogo Completo</h1>
-                        <input
-                            type="text"
-                            placeholder="🔍 Buscar productos..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            className="px-4 py-2 border rounded-lg w-64 text-sm"
-                        />
-                    </div>
+                    <h1 className="text-3xl font-bold text-[#022953]">Catálogo Completo</h1>
 
                     <div className="flex flex-wrap gap-4">
                         <select

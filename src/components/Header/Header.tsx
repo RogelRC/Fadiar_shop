@@ -1,3 +1,4 @@
+// app/components/Header.tsx
 "use client";
 
 import Link from "next/link";
@@ -15,7 +16,6 @@ export default function Header() {
 
     return (
         <header className="fixed top-0 w-full h-[10vh] z-50 overflow-hidden bg-black">
-            {/* Capa de fondo con desenfoque */}
             <div
                 className="absolute inset-0 backdrop-blur-md"
                 style={{
@@ -26,13 +26,10 @@ export default function Header() {
                     transform: "scale(1.05)",
                 }}
             >
-                {/* Capa oscura semi-transparente */}
                 <div className="absolute inset-0" />
             </div>
 
-            {/* Contenido del header */}
             <div className="container mx-auto px-4 h-full flex items-center justify-between relative">
-                {/* Logo */}
                 <Link href="/" className="relative h-full w-40 hover:opacity-90 transition-opacity">
                     <Image
                         src="/logo.png"
@@ -43,10 +40,8 @@ export default function Header() {
                     />
                 </Link>
 
-                {/* Barra de búsqueda */}
                 <SearchBar />
 
-                {/* Navegación */}
                 <nav className="flex items-center gap-6">
                     {navLinks.map((link) => (
                         <Link
