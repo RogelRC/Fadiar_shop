@@ -1,129 +1,129 @@
 "use client";
 
-import * as React from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
-import {Tabs, TabsList, TabsTrigger} from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import Link from "next/link";
 
-// Definir el tipo para los productos
 interface Product {
-    img: string;
     id: number;
-    brand: string;
-    count: number;
-    description: string;
-    model: string;
     name: string;
-    regret: number;
+    img: string;
+    description: string;
+    brand: string;
+    model: string;
     sells: number;
+    regret: number;
 }
 
-function TopSells() {
-    const [products, setProducts] = React.useState<Product[]>([]);
-    const [selectedProduct, setSelectedProduct] = React.useState<Product | null>(
-        null
-    );
+const customLoader = ({ src, width, quality }: { src: string; width: number; quality?: number }) => {
+    return `${src}?w=${width}&q=${quality || 75}`;
+};
 
-    // Hacer la petición al cargar el componente
-    React.useEffect(() => {
+export default function TopSells() {
+    const [products, setProducts] = useState<Product[]>([]);
+    const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+
+    useEffect(() => {
         fetch("https://app.fadiar.com/api/mas_vendidos", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({count: 4}), // Parámetro count para obtener los 4 productos más vendidos
+            body: JSON.stringify({ count: 4 }),
         })
-            .then((response) => response.json()) // Convertir la respuesta en JSON
+            .then((response) => response.json())
             .then((data) => {
                 if (Array.isArray(data)) {
-                    // Si el servidor devuelve un array directamente
                     setProducts(data);
-                    setSelectedProduct(data[0] || null); // Establecer el primer producto o null
-                } else if (data?.products && Array.isArray(data.products)) {
-                    // Si el servidor devuelve un objeto con `products`
+                    setSelectedProduct(data[0] || null);
+                } else if (data?.products) {
                     setProducts(data.products);
                     setSelectedProduct(data.products[0] || null);
-                } else {
-                    console.error("Formato de respuesta inesperado:", data);
                 }
             })
             .catch((error) => {
-                console.error("Error fetching data:", error); // Manejar errores
+                console.error("Error fetching data:", error);
             });
     }, []);
 
     if (products.length === 0) {
-        return <div className="text-center">Cargando productos...</div>;
+        return <div className="text-center text-white">Cargando productos...</div>;
     }
 
     return (
-        <div className="flex flex-col gap-6 w-full h-[88vh] relative"
-             style={{
-                 backgroundImage: "url('/background.jpeg')", // Ruta a la imagen en public
-                 backgroundSize: "cover",
-                 backgroundPosition: "center",
-             }}
+        <div
+            className="flex flex-col gap-6 w-full h-[90vh] relative"
+            style={{
+                backgroundImage: "url('/background.jpeg')",
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+            }}
         >
+            <div className="flex absolute top-[15%] bottom-[5%] left-[50%] w-[1px] bg-white z-50"></div>
 
-            <div className="flex absolute top-[15%] bottom-[5%] left-1/2 w-[1px] bg-white z-1000"></div>
+            {/* Header */}
             <div className="flex w-full h-[10vh] px-14 pt-2 text-white font-bold">
-                <h1 className="flex w-full h-full text-5xl">Productos</h1>
-                <h3 className="flex w-full h-full justify-end">Ver más {">"}</h3>
+                <h1 className="flex w-full h-full text-5xl">Productos destacados</h1>
+                <Link href="/productos" className="flex w-full h-full justify-end items-center hover:text-blue-300">
+                    Ver más {">"}
+                </Link>
             </div>
+
             <div className="flex w-full h-[80vh]">
-                {/* Lista de productos (sección izquierda) */}
-                <Tabs defaultValue={products[0]?.id.toString()} className="w-2/3 h-full">
-                    <TabsList className="flex flex-col gap-4 w-full h-full bg-transparent">
+                {/* Lista de productos */}
+                <Tabs defaultValue={products[0]?.id.toString()} className="w-1/2 h-full justify-items-center">
+                    <TabsList className="flex flex-col gap-4 w-2/3 h-full bg-transparent">
                         {products.map((product) => (
                             <TabsTrigger
                                 key={product.id}
                                 value={product.id.toString()}
-                                className="flex items-center gap-2 p-2 w-1/2 h-full group"
+                                className="flex items-center gap-4 p-2 w-full h-36 group"
                                 onClick={() => setSelectedProduct(product)}
                             >
-                                <div className="flex justify-center w-full">
-                                    <span
-                                        className="text-lg font-bold text-white group-data-[state=active]:text-[#022953]">{product.name}</span>
+                                <div className="flex justify-center w-1/2">
+                                    <span className="text-lg font-bold text-white group-data-[state=active]:text-[#022953]">
+                                        {product.name}
+                                    </span>
                                 </div>
-                                <div className="flex w-1/2 h-full">
+                                <div className="relative w-1/2 h-full">
                                     <Image
-                                        loader={() =>
-                                            "https://app.fadiar.com/api/" + product.img
-                                        }
-                                        src={"https://app.fadiar.com/api/" + product.img}
+                                        loader={customLoader}
+                                        src={`https://app.fadiar.com/api/${product.img}`}
                                         alt={product.name}
-                                        width={50}
-                                        height={50}
-                                        className="rounded-lg w-full"
+                                        fill
+                                        className="rounded-lg object-contain"
                                     />
                                 </div>
-
                             </TabsTrigger>
                         ))}
                     </TabsList>
                 </Tabs>
 
-                {/* Detalle del producto seleccionado (sección derecha) */}
+                {/* Detalle del producto */}
                 {selectedProduct && (
-                    <div className="w-2/3 flex flex-col items-center text-lg text-white">
+                    <div className="w-1/2 flex flex-col items-center text-lg text-white p-8">
                         <div className="relative w-64 h-64 rounded-2xl overflow-hidden">
                             <Image
-                                loader={() =>
-                                    "https://app.fadiar.com/api/" + selectedProduct.img
-                                }
-                                src={"https://app.fadiar.com/api/" + selectedProduct.img}
+                                loader={customLoader}
+                                src={`https://app.fadiar.com/api/${selectedProduct.img}`}
                                 alt={selectedProduct.name}
-                                layout="fill"
-                                className="rounded-lg object-contain"
+                                fill
+                                className="object-contain"
                             />
                         </div>
                         <h2 className="mt-6 text-2xl font-bold">{selectedProduct.name}</h2>
-                        <p className="mt-2 px-14 pt-10 justify-center">{selectedProduct.description}</p>
+                        <p className="mt-2 px-14 pt-10 text-center whitespace-pre-line">
+                            {selectedProduct.description
+                                .replace(/• /g, "\n")
+                                .split('\n')
+                                .slice(0, 6)
+                                .join('\n')}
+                            {selectedProduct.description.split('\n').length > 6 && '...'}
+                        </p>
                     </div>
                 )}
             </div>
-
         </div>
     );
 }
-
-export default TopSells;
