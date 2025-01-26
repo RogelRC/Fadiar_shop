@@ -10,7 +10,7 @@ export default function SearchBar() {
             <Input
                 type="text"
                 placeholder="Buscar productos..."
-                className="bg-transparent border-b border-gray-300 rounded-none focus-visible:ring-0 focus-visible:border-blue-500 pr-10 text-white placeholder:text-gray-400"
+                className="bg-transparent border-transparent border-b-2 border-b-gray-300 rounded-none focus-visible:ring-0 focus-visible:border-b-blue-500 pr-10 text-white placeholder:text-gray-400"
             />
             <Button
                 variant="ghost"

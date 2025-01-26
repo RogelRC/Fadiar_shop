@@ -11,15 +11,29 @@ export default function Header() {
     const navLinks = [
         { name: "Inicio", href: "/" },
         { name: "Productos", href: "/productos" },
-        { name: "Contacto", href: "/contacto" },
     ];
 
     return (
-        <header className="fixed top-0 w-full bg-black/80 backdrop-blur-md z-50 h-[10vh]">
-            <div className="container mx-auto px-4 h-full flex items-center justify-between">
+        <header className="fixed top-0 w-full h-[10vh] z-50 overflow-hidden bg-black">
+            {/* Capa de fondo con desenfoque */}
+            <div
+                className="absolute inset-0 backdrop-blur-md"
+                style={{
+                    backgroundImage: "url('/landscape.webp')",
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                    filter: "blur(4px)",
+                    transform: "scale(1.05)",
+                }}
+            >
+                {/* Capa oscura semi-transparente */}
+                <div className="absolute inset-0" />
+            </div>
 
+            {/* Contenido del header */}
+            <div className="container mx-auto px-4 h-full flex items-center justify-between relative">
                 {/* Logo */}
-                <Link href="/" className="relative h-12 w-40 hover:opacity-90 transition-opacity">
+                <Link href="/" className="relative h-full w-40 hover:opacity-90 transition-opacity">
                     <Image
                         src="/logo.png"
                         alt="Fadiar Logo"
