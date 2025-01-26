@@ -58,7 +58,7 @@ export default function ProductosPage() {
 
     useEffect(() => {
         setMinPrice(0);
-        setMaxPrice(selectedCurrency === "CUP" ? 100000 : 1000);
+        setMaxPrice(selectedCurrency === "CUP" ? 9999999999 : 9999999999);
     }, [selectedCurrency]);
 
     const getPriceInCurrency = (prices: Array<[number, number, string]>) => {
