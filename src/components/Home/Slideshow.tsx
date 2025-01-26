@@ -12,24 +12,45 @@ const images = [
 
 export default function Slideshow() {
     const [currentIndex, setCurrentIndex] = useState(0);
+    const [, setDirection] = useState<"next" | "prev">("next");
+
+    const handleNext = () => {
+        setDirection("next");
+        setCurrentIndex((prev) => (prev + 1) % images.length);
+    };
+
+    const handlePrev = () => {
+        setDirection("prev");
+        setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
+    };
 
     useEffect(() => {
-        const interval = setInterval(() => {
-            setCurrentIndex((prev) => (prev + 1) % images.length);
-        }, 6000);
-
+        const interval = setInterval(handleNext, 6000);
         return () => clearInterval(interval);
     }, []);
 
     return (
-        <div className="relative w-full h-[90vh] overflow-hidden">
-            <AnimatePresence mode="sync">
+        <div className="relative w-full h-[90vh] overflow-hidden bg-black">
+            <AnimatePresence initial={false} mode="popLayout">
                 <motion.div
                     key={currentIndex}
-                    initial={{ x: "100%" }}
-                    animate={{ x: 0 }}
-                    exit={{ x: "-100%" }}
-                    transition={{ duration: 0.8, ease: "easeInOut" }}
+                    initial={{
+                        opacity: 0,
+                        filter: "blur(8px)"
+                    }}
+                    animate={{
+                        opacity: 1,
+                        filter: "blur(0px)"
+                    }}
+                    exit={{
+                        opacity: 0,
+                        filter: "blur(8px)",
+                        transition: { duration: 0.8 }
+                    }}
+                    transition={{
+                        duration: 1.2,
+                        ease: [0.22, 1, 0.36, 1]
+                    }}
                     className="absolute inset-0"
                 >
                     <Image
@@ -43,9 +64,9 @@ export default function Slideshow() {
                 </motion.div>
             </AnimatePresence>
 
+            {/* Controles */}
             <div className="absolute bottom-8 left-8 text-white z-10">
                 <h1 className="text-4xl md:text-6xl font-bold mb-4">CATÁLOGO</h1>
-
                 <div className="flex gap-2">
                     {images.map((_, idx) => (
                         <button
@@ -61,14 +82,20 @@ export default function Slideshow() {
             </div>
 
             <div className="absolute bottom-8 right-8 flex gap-4 z-10">
-                <NavArrow direction="left" onClick={() => setCurrentIndex(prev => (prev - 1 + images.length) % images.length)} />
-                <NavArrow direction="right" onClick={() => setCurrentIndex(prev => (prev + 1) % images.length)} />
+                <NavArrow direction="left" onClick={handlePrev} />
+                <NavArrow direction="right" onClick={handleNext} />
             </div>
         </div>
     );
 }
 
-function NavArrow({ direction, onClick }: { direction: "left" | "right"; onClick: () => void }) {
+function NavArrow({
+                      direction,
+                      onClick,
+                  }: {
+    direction: "left" | "right";
+    onClick: () => void;
+}) {
     return (
         <button
             onClick={onClick}

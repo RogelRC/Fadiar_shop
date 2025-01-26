@@ -1,10 +1,10 @@
 // app/productos/page.tsx
-"use client";
+"use client"
 
-import { useState, useEffect } from "react";
+import {useState, useEffect, Suspense} from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import {useSearchParams} from "next/navigation";
 
 interface Product {
     id: number;
@@ -26,7 +26,7 @@ export default function ProductosPage() {
     const searchParams = useSearchParams();
     const [products, setProducts] = useState<Product[]>([]);
     const [currencies, setCurrencies] = useState<Currency[]>([]);
-    const [selectedCurrency, setSelectedCurrency] = useState("USD");
+    const [selectedCurrency, setSelectedCurrency] = useState("CUP");
     const [sortBy, setSortBy] = useState("name");
     const [filterBrand, setFilterBrand] = useState("all");
     const [minPrice, setMinPrice] = useState(0);
@@ -63,19 +63,19 @@ export default function ProductosPage() {
 
     const getPriceInCurrency = (prices: Array<[number, number, string]>) => {
         const directPrice = prices.find(p => p[2] === selectedCurrency);
-        if (directPrice) return { price: directPrice[1], currency: selectedCurrency };
+        if (directPrice) return {price: directPrice[1], currency: selectedCurrency};
 
         const originalCurrency = currencies.find(c => c.currency === prices[0][2]);
         const targetCurrency = currencies.find(c => c.currency === selectedCurrency);
 
         if (!originalCurrency || !targetCurrency) {
-            return { price: prices[0][1], currency: prices[0][2] };
+            return {price: prices[0][1], currency: prices[0][2]};
         }
 
         const priceInUSD = prices[0][1] / originalCurrency.value;
         const convertedPrice = priceInUSD * targetCurrency.value;
 
-        return { price: convertedPrice, currency: selectedCurrency };
+        return {price: convertedPrice, currency: selectedCurrency};
     };
 
     const filteredProducts = products
@@ -86,7 +86,7 @@ export default function ProductosPage() {
             filterBrand === "all" || product.brand.toLowerCase() === filterBrand.toLowerCase()
         )
         .filter(product => {
-            const { price } = getPriceInCurrency(product.prices);
+            const {price} = getPriceInCurrency(product.prices);
             return price >= minPrice && price <= maxPrice;
         })
         .filter(product => {
@@ -98,10 +98,13 @@ export default function ProductosPage() {
             const priceA = getPriceInCurrency(a.prices).price;
             const priceB = getPriceInCurrency(b.prices).price;
 
-            switch(sortBy) {
-                case "price-asc": return priceA - priceB;
-                case "price-desc": return priceB - priceA;
-                default: return a.name.localeCompare(b.name);
+            switch (sortBy) {
+                case "price-asc":
+                    return priceA - priceB;
+                case "price-desc":
+                    return priceB - priceA;
+                default:
+                    return a.name.localeCompare(b.name);
             }
         });
 
@@ -193,56 +196,58 @@ export default function ProductosPage() {
                         </div>
                     </div>
                 </div>
+                <Suspense>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                        {filteredProducts.map(product => {
+                                const {price, currency} = getPriceInCurrency(product.prices);
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    {filteredProducts.map(product => {
-                        const { price, currency } = getPriceInCurrency(product.prices);
+                                return (
+                                    <div
+                                        key={product.id}
+                                        className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow"
+                                    >
+                                        <div className="relative h-48 w-full">
+                                            <Image
+                                                src={`https://app.fadiar.com/api/${product.img}`}
+                                                alt={product.name}
+                                                fill
+                                                className="object-cover"
+                                                sizes="(max-width: 768px) 100vw, 50vw"
+                                                priority
+                                            />
+                                        </div>
 
-                        return (
-                            <div
-                                key={product.id}
-                                className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow"
-                            >
-                                <div className="relative h-48 w-full">
-                                    <Image
-                                        src={`https://app.fadiar.com/api/${product.img}`}
-                                        alt={product.name}
-                                        fill
-                                        className="object-cover"
-                                        sizes="(max-width: 768px) 100vw, 50vw"
-                                        priority
-                                    />
-                                </div>
+                                        <div className="p-4">
+                                            <h3 className="text-xl font-semibold mb-2">{product.name}</h3>
+                                            <div className="flex justify-between items-center mb-2">
+                                                <span className="text-sm text-gray-600">{product.brand}</span>
+                                                <span className="text-sm text-gray-500">{product.model}</span>
+                                            </div>
 
-                                <div className="p-4">
-                                    <h3 className="text-xl font-semibold mb-2">{product.name}</h3>
-                                    <div className="flex justify-between items-center mb-2">
-                                        <span className="text-sm text-gray-600">{product.brand}</span>
-                                        <span className="text-sm text-gray-500">{product.model}</span>
-                                    </div>
+                                            <p className="text-lg font-bold text-[#022953]">
+                                                {price.toFixed(2)} {currency}
+                                            </p>
 
-                                    <p className="text-lg font-bold text-[#022953]">
-                                        {price.toFixed(2)} {currency}
-                                    </p>
-
-                                    <div className="mt-2 flex justify-between items-center">
+                                            <div className="mt-2 flex justify-between items-center">
                                         <span className={`text-sm ${
                                             product.count > 0 ? "text-green-600" : "text-red-600"
                                         }`}>
                                             {product.count > 0 ? "Disponible" : "Agotado"}
                                         </span>
-                                        <Link
-                                            href={`/productos/${product.id}`}
-                                            className="px-3 py-1 bg-[#022953] text-white rounded hover:bg-[#011a3a] text-sm"
-                                        >
-                                            Ver detalles
-                                        </Link>
+                                                <Link
+                                                    href={`/productos/${product.id}`}
+                                                    className="px-3 py-1 bg-[#022953] text-white rounded hover:bg-[#011a3a] text-sm"
+                                                >
+                                                    Ver detalles
+                                                </Link>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                            </div>
+                                )
+                            }
                         )}
-                    )}
-                </div>
+                    </div>
+                </Suspense>
 
                 {filteredProducts.length === 0 && (
                     <div className="text-center py-12 text-gray-500">
