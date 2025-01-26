@@ -1,9 +1,10 @@
-// app/components/Header.tsx
+// app/components/Header/Header.tsx
 "use client";
 
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
+import { Suspense } from "react";
 import SearchBar from "./SearchBar";
 
 export default function Header() {
@@ -40,7 +41,9 @@ export default function Header() {
                     />
                 </Link>
 
-                <SearchBar />
+                <Suspense fallback={<div className="w-full max-w-[500px] h-10 bg-gray-200 animate-pulse" />}>
+                    <SearchBar />
+                </Suspense>
 
                 <nav className="flex items-center gap-6">
                     {navLinks.map((link) => (
