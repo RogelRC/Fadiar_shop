@@ -30,12 +30,21 @@ export default function ProductList() {
     const [sortBy, setSortBy] = useState("name");
     const [filterBrand, setFilterBrand] = useState("all");
     const [minPrice, setMinPrice] = useState(0);
-    const [maxPrice, setMaxPrice] = useState(1000);
+    const [maxPrice, setMaxPrice] = useState(9999999999);
     const [availabilityFilter, setAvailabilityFilter] = useState<"all" | "available" | "out">("all");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
     const searchTerm = searchParams.get('search') || '';
+
+    const resetFilters = () => {
+        setSelectedCurrency("CUP");
+        setSortBy("name");
+        setFilterBrand("all");
+        setMinPrice(0);
+        setMaxPrice(9999999999);
+        setAvailabilityFilter("all");
+    };
 
     useEffect(() => {
         const fetchData = async () => {
@@ -56,15 +65,12 @@ export default function ProductList() {
         fetchData();
     }, []);
 
-    useEffect(() => {
-        setMinPrice(0);
-        setMaxPrice(selectedCurrency === "CUP" ? 9999999999 : 9999999999);
-    }, [selectedCurrency]);
-
     const getPriceInCurrency = (prices: Array<[number, number, string]>) => {
+        // Buscar precio directo en la moneda seleccionada
         const directPrice = prices.find(p => p[2] === selectedCurrency);
         if (directPrice) return { price: directPrice[1], currency: selectedCurrency };
 
+        // Conversión mediante tasas de cambio
         const originalCurrency = currencies.find(c => c.currency === prices[0][2]);
         const targetCurrency = currencies.find(c => c.currency === selectedCurrency);
 
@@ -133,6 +139,13 @@ export default function ProductList() {
                     <h1 className="text-3xl font-bold text-[#022953]">Catálogo Completo</h1>
 
                     <div className="flex flex-wrap gap-4">
+                        <button
+                            onClick={resetFilters}
+                            className="px-3 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
+                        >
+                            Reiniciar Filtros 🔄
+                        </button>
+
                         <select
                             value={selectedCurrency}
                             onChange={(e) => setSelectedCurrency(e.target.value)}
