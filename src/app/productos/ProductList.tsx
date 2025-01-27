@@ -30,7 +30,7 @@ export default function ProductList() {
     const [sortBy, setSortBy] = useState("name");
     const [filterBrand, setFilterBrand] = useState("all");
     const [minPrice, setMinPrice] = useState(0);
-    const [maxPrice, setMaxPrice] = useState(1000);
+    const [maxPrice, setMaxPrice] = useState(9999999999);
     const [availabilityFilter, setAvailabilityFilter] = useState<"all" | "available" | "out">("all");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -60,6 +60,15 @@ export default function ProductList() {
         setMinPrice(0);
         setMaxPrice(selectedCurrency === "CUP" ? 9999999999 : 9999999999);
     }, [selectedCurrency]);
+
+    const resetFilters = () => {
+        setSelectedCurrency("CUP");
+        setSortBy("name");
+        setFilterBrand("all");
+        setMinPrice(0);
+        setMaxPrice(9999999999);
+        setAvailabilityFilter("all");
+    };
 
     const getPriceInCurrency = (prices: Array<[number, number, string]>) => {
         const directPrice = prices.find(p => p[2] === selectedCurrency);
@@ -194,6 +203,12 @@ export default function ProductList() {
                                 />
                             </div>
                         </div>
+                        <button
+                            onClick={resetFilters}
+                            className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+                        >
+                            Reiniciar filtros
+                        </button>
                     </div>
                 </div>
 

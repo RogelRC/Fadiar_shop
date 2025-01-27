@@ -31,7 +31,7 @@ export default function SearchBar() {
                 }
 
                 window.dispatchEvent(new CustomEvent('searchUpdate'));
-            }, 300),
+            }, 5),
         [pathname, searchParams, router]
     );
 
