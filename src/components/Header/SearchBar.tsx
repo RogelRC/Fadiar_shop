@@ -13,11 +13,9 @@ export default function SearchBar() {
     const searchParams = useSearchParams();
     const [searchQuery, setSearchQuery] = useState(searchParams?.get("search") || "");
 
-    // Debounce memoizado con useMemo
     const debouncedSearch = useMemo(
         () =>
             debounce((query: string) => {
-                // Crear una copia local de searchParams
                 const params = new URLSearchParams(searchParams?.toString() || "");
 
                 if (query) {
@@ -31,22 +29,21 @@ export default function SearchBar() {
                 } else {
                     router.replace(`${pathname}?${params.toString()}`, { scroll: false });
                 }
-            }, 500), // Reducimos el tiempo a 1000ms
+
+                window.dispatchEvent(new CustomEvent('searchUpdate'));
+            }, 300),
         [pathname, searchParams, router]
     );
 
     useEffect(() => {
-        // Sincroniza el input con los parámetros de la URL
         setSearchQuery(searchParams?.get("search") || "");
-
-        // Cancela el debounce al desmontar el componente
         return () => debouncedSearch.cancel();
     }, [searchParams, debouncedSearch]);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
-        setSearchQuery(value); // Actualización inmediata del estado
-        debouncedSearch(value); // Llamada debounce para la navegación
+        setSearchQuery(value);
+        debouncedSearch(value);
     };
 
     return (

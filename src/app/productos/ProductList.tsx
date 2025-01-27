@@ -34,6 +34,7 @@ export default function ProductList() {
     const [availabilityFilter, setAvailabilityFilter] = useState<"all" | "available" | "out">("all");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [masonryKey, setMasonryKey] = useState(Date.now());
 
     const searchTerm = searchParams.get('search') || '';
 
@@ -65,12 +66,19 @@ export default function ProductList() {
         fetchData();
     }, []);
 
+    useEffect(() => {
+        const handleSearchUpdate = () => {
+            setMasonryKey(Date.now());
+        };
+
+        window.addEventListener('searchUpdate', handleSearchUpdate);
+        return () => window.removeEventListener('searchUpdate', handleSearchUpdate);
+    }, []);
+
     const getPriceInCurrency = (prices: Array<[number, number, string]>) => {
-        // Buscar precio directo en la moneda seleccionada
         const directPrice = prices.find(p => p[2] === selectedCurrency);
         if (directPrice) return { price: directPrice[1], currency: selectedCurrency };
 
-        // Conversión mediante tasas de cambio
         const originalCurrency = currencies.find(c => c.currency === prices[0][2]);
         const targetCurrency = currencies.find(c => c.currency === selectedCurrency);
 
@@ -210,7 +218,10 @@ export default function ProductList() {
                     </div>
                 </div>
 
-                <div className="columns-1 md:columns-2 lg:columns-3 xl:columns-4 gap-6">
+                <div
+                    key={masonryKey}
+                    className="columns-1 md:columns-2 lg:columns-3 xl:columns-4 gap-6"
+                >
                     {filteredProducts.map(product => {
                         const { price, currency } = getPriceInCurrency(product.prices);
 
