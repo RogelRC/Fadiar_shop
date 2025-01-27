@@ -1,8 +1,8 @@
 // app/productos/ProductList.tsx
 "use client";
 
-import { useSearchParams } from "next/navigation";
-import { useState, useEffect } from "react";
+import {useSearchParams} from "next/navigation";
+import {useState, useEffect} from "react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -30,22 +30,12 @@ export default function ProductList() {
     const [sortBy, setSortBy] = useState("name");
     const [filterBrand, setFilterBrand] = useState("all");
     const [minPrice, setMinPrice] = useState(0);
-    const [maxPrice, setMaxPrice] = useState(9999999999);
+    const [maxPrice, setMaxPrice] = useState(1000);
     const [availabilityFilter, setAvailabilityFilter] = useState<"all" | "available" | "out">("all");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [masonryKey, setMasonryKey] = useState(Date.now());
 
     const searchTerm = searchParams.get('search') || '';
-
-    const resetFilters = () => {
-        setSelectedCurrency("CUP");
-        setSortBy("name");
-        setFilterBrand("all");
-        setMinPrice(0);
-        setMaxPrice(9999999999);
-        setAvailabilityFilter("all");
-    };
 
     useEffect(() => {
         const fetchData = async () => {
@@ -67,29 +57,25 @@ export default function ProductList() {
     }, []);
 
     useEffect(() => {
-        const handleSearchUpdate = () => {
-            setMasonryKey(Date.now());
-        };
-
-        window.addEventListener('searchUpdate', handleSearchUpdate);
-        return () => window.removeEventListener('searchUpdate', handleSearchUpdate);
-    }, []);
+        setMinPrice(0);
+        setMaxPrice(selectedCurrency === "CUP" ? 9999999999 : 9999999999);
+    }, [selectedCurrency]);
 
     const getPriceInCurrency = (prices: Array<[number, number, string]>) => {
         const directPrice = prices.find(p => p[2] === selectedCurrency);
-        if (directPrice) return { price: directPrice[1], currency: selectedCurrency };
+        if (directPrice) return {price: directPrice[1], currency: selectedCurrency};
 
         const originalCurrency = currencies.find(c => c.currency === prices[0][2]);
         const targetCurrency = currencies.find(c => c.currency === selectedCurrency);
 
         if (!originalCurrency || !targetCurrency) {
-            return { price: prices[0][1], currency: prices[0][2] };
+            return {price: prices[0][1], currency: prices[0][2]};
         }
 
         const priceInUSD = prices[0][1] / originalCurrency.value;
         const convertedPrice = priceInUSD * targetCurrency.value;
 
-        return { price: convertedPrice, currency: selectedCurrency };
+        return {price: convertedPrice, currency: selectedCurrency};
     };
 
     const filteredProducts = products
@@ -100,7 +86,7 @@ export default function ProductList() {
             filterBrand === "all" || product.brand.toLowerCase() === filterBrand.toLowerCase()
         )
         .filter(product => {
-            const { price } = getPriceInCurrency(product.prices);
+            const {price} = getPriceInCurrency(product.prices);
             return price >= minPrice && price <= maxPrice;
         })
         .filter(product => {
@@ -147,13 +133,6 @@ export default function ProductList() {
                     <h1 className="text-3xl font-bold text-[#022953]">Catálogo Completo</h1>
 
                     <div className="flex flex-wrap gap-4">
-                        <button
-                            onClick={resetFilters}
-                            className="px-3 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
-                        >
-                            Reiniciar Filtros 🔄
-                        </button>
-
                         <select
                             value={selectedCurrency}
                             onChange={(e) => setSelectedCurrency(e.target.value)}
@@ -218,18 +197,16 @@ export default function ProductList() {
                     </div>
                 </div>
 
-                <div
-                    key={masonryKey}
-                    className="columns-1 md:columns-2 lg:columns-3 xl:columns-4 gap-6"
-                >
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     {filteredProducts.map(product => {
-                        const { price, currency } = getPriceInCurrency(product.prices);
+                        const {price, currency} = getPriceInCurrency(product.prices);
 
                         return (
                             <div
                                 key={product.id}
-                                className="break-inside-avoid mb-6 bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow"
+                                className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow flex flex-col h-full"
                             >
+                                {/* Imagen del producto */}
                                 <div className="relative h-48 w-full">
                                     <Image
                                         src={`https://app.fadiar.com/api/${product.img}`}
@@ -241,22 +218,30 @@ export default function ProductList() {
                                     />
                                 </div>
 
-                                <div className="p-4 h-full">
-                                    <h3 className="text-xl font-semibold mb-2">{product.name}</h3>
-                                    <div className="flex justify-between items-center mb-2">
-                                        <span className="text-sm text-gray-600">{product.brand}</span>
-                                        <span className="text-sm text-gray-500">{product.model}</span>
+                                {/* Contenido del producto */}
+                                <div className="p-4 flex flex-col flex-1">
+                                    {/* Título y detalles */}
+                                    <div className="mb-2">
+                                        <h3 className="text-xl font-semibold">{product.name}</h3>
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-sm text-gray-600">{product.brand}</span>
+                                            <span className="text-sm text-gray-500">{product.model}</span>
+                                        </div>
                                     </div>
 
+                                    {/* Precio */}
                                     <p className="text-lg font-bold text-[#022953]">
                                         {price.toFixed(2)} {currency}
                                     </p>
 
-                                    <div className="mt-2 flex justify-between items-center">
-                                        <span className={`text-sm ${
-                                            product.count > 0 ? "text-green-600" : "text-red-600"
-                                        }`}>
-                                            {product.count > 0 ? "Disponible ✅" : "Agotado ❌"}
+                                    {/* Disponibilidad y botón de detalles */}
+                                    <div className="mt-auto flex justify-between items-center">
+                                        <span
+                                            className={`text-sm ${
+                                                product.count > 0 ? "text-green-600" : "text-red-600"
+                                            }`}
+                                        >
+                                          {product.count > 0 ? "Disponible" : "Agotado"}
                                         </span>
                                         <Link
                                             href={`/productos/${product.id}`}
@@ -268,6 +253,7 @@ export default function ProductList() {
                                 </div>
                             </div>
                         );
+
                     })}
                 </div>
 
