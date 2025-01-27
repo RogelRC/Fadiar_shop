@@ -197,14 +197,14 @@ export default function ProductList() {
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <div className="columns-1 md:columns-2 lg:columns-3 xl:columns-4 gap-6">
                     {filteredProducts.map(product => {
                         const { price, currency } = getPriceInCurrency(product.prices);
 
                         return (
                             <div
                                 key={product.id}
-                                className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow"
+                                className="break-inside-avoid mb-6 bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow"
                             >
                                 <div className="relative h-48 w-full">
                                     <Image
@@ -217,7 +217,7 @@ export default function ProductList() {
                                     />
                                 </div>
 
-                                <div className="p-4">
+                                <div className="p-4 h-full">
                                     <h3 className="text-xl font-semibold mb-2">{product.name}</h3>
                                     <div className="flex justify-between items-center mb-2">
                                         <span className="text-sm text-gray-600">{product.brand}</span>
@@ -232,7 +232,7 @@ export default function ProductList() {
                                         <span className={`text-sm ${
                                             product.count > 0 ? "text-green-600" : "text-red-600"
                                         }`}>
-                                            {product.count > 0 ? "Disponible" : "Agotado"}
+                                            {product.count > 0 ? "Disponible ✅" : "Agotado ❌"}
                                         </span>
                                         <Link
                                             href={`/productos/${product.id}`}

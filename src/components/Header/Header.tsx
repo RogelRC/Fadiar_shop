@@ -1,14 +1,24 @@
-// app/components/Header/Header.tsx
 "use client";
 
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { Suspense } from "react";
+import { Suspense, useState, useEffect } from "react";
 import SearchBar from "./SearchBar";
 
 export default function Header() {
     const pathname = usePathname();
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        const mediaQuery = window.matchMedia("(max-width: 640px)");
+        setIsMobile(mediaQuery.matches);
+
+        const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+        mediaQuery.addEventListener("change", handler);
+
+        return () => mediaQuery.removeEventListener("change", handler);
+    }, []);
 
     const navLinks = [
         { name: "Inicio", href: "/" },
@@ -33,7 +43,7 @@ export default function Header() {
             <div className="container mx-auto px-4 h-full flex items-center justify-between relative">
                 <Link href="/" className="relative h-full w-40 hover:opacity-90 transition-opacity">
                     <Image
-                        src="/logo.png"
+                        src={isMobile ? "/favicon.png" : "/logo.png"}
                         alt="Fadiar Logo"
                         fill
                         priority
