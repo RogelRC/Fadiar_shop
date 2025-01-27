@@ -21,9 +21,11 @@ export default function Home() {
                 <Carousel/>
             </Suspense>
 
-            <Suspense>
-                <Topsells/>
-            </Suspense>
+            <div className="hidden lg:block">
+                <Suspense>
+                    <Topsells/>
+                </Suspense>
+            </div>
         </>
     );
 }

@@ -9,6 +9,7 @@ import SearchBar from "./SearchBar";
 export default function Header() {
     const pathname = usePathname();
     const [isMobile, setIsMobile] = useState(false);
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     useEffect(() => {
         const mediaQuery = window.matchMedia("(max-width: 640px)");
@@ -26,7 +27,7 @@ export default function Header() {
     ];
 
     return (
-        <header className="fixed top-0 w-full h-[10vh] z-50 overflow-hidden bg-black">
+        <header className="fixed top-0 w-full h-[10vh] z-50 bg-black">
             <div
                 className="absolute inset-0 backdrop-blur-md"
                 style={{
@@ -55,19 +56,62 @@ export default function Header() {
                     <SearchBar />
                 </Suspense>
 
-                <nav className="flex items-center gap-6">
-                    {navLinks.map((link) => (
-                        <Link
-                            key={link.href}
-                            href={link.href}
-                            className={`text-sm font-medium transition-colors hover:text-blue-400 ${
-                                pathname === link.href ? "text-blue-400" : "text-white"
-                            }`}
+                {/* Menú de navegación */}
+                <div className="relative ml-4"> {/* Espaciado agregado */}
+                    {isMobile ? (
+                        <button
+                            onClick={() => setIsMenuOpen(!isMenuOpen)}
+                            className="text-white focus:outline-none"
                         >
-                            {link.name}
-                        </Link>
-                    ))}
-                </nav>
+                            {/* Icono de menú hamburguesa */}
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-6 w-6"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                            >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M4 6h16M4 12h16m-7 6h7"
+                                />
+                            </svg>
+                        </button>
+                    ) : (
+                        <nav className="flex items-center gap-6">
+                            {navLinks.map((link) => (
+                                <Link
+                                    key={link.href}
+                                    href={link.href}
+                                    className={`text-sm font-medium transition-colors hover:text-blue-400 ${
+                                        pathname === link.href ? "text-blue-400" : "text-white"
+                                    }`}
+                                >
+                                    {link.name}
+                                </Link>
+                            ))}
+                        </nav>
+                    )}
+
+                    {/* Menú desplegable */}
+                    {isMenuOpen && isMobile && (
+                        <div className="absolute top-10 right-0 mt-2 w-40 bg-black rounded-lg shadow-lg z-50">
+                            {/* Ajuste de z-index para evitar que se esconda */}
+                            {navLinks.map((link) => (
+                                <Link
+                                    key={link.href}
+                                    href={link.href}
+                                    className="block px-4 py-2 text-white hover:bg-gray-800"
+                                    onClick={() => setIsMenuOpen(false)} // Cierra el menú al hacer clic
+                                >
+                                    {link.name}
+                                </Link>
+                            ))}
+                        </div>
+                    )}
+                </div>
             </div>
         </header>
     );
