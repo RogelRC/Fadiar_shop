@@ -1,4 +1,4 @@
-// app/productos/page.tsx
+// app/Products/page.tsx
 import { Suspense } from "react";
 import ProductList from "./ProductList";
 

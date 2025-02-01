@@ -1,4 +1,4 @@
-// app/productos/ProductList.tsx
+// app/Products/ProductList.tsx
 "use client";
 
 import {useSearchParams} from "next/navigation";
@@ -41,7 +41,7 @@ export default function ProductList() {
         const fetchData = async () => {
             try {
                 const response = await fetch("https://app.fadiar.com/api/inventory");
-                if (!response.ok) throw new Error("Error al cargar los productos");
+                if (!response.ok) throw new Error("Error al cargar los Products");
 
                 const data = await response.json();
                 setProducts(data.products);
@@ -259,7 +259,7 @@ export default function ProductList() {
                                           {product.count > 0 ? "Disponible" : "Agotado"}
                                         </span>
                                         <Link
-                                            href={`/productos/${product.id}`}
+                                            href={`/Products/${product.id}`}
                                             className="px-3 py-1 bg-[#022953] text-white rounded hover:bg-[#011a3a] text-sm"
                                         >
                                             Ver detalles

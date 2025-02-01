@@ -72,7 +72,7 @@ export default function TopSells() {
             </div>
 
             <div className="flex w-full h-[80vh]">
-                {/* Lista de productos */}
+                {/* Lista de Products */}
                 <Tabs defaultValue={products[0]?.id.toString()} className="w-1/2 h-full justify-items-center">
                     <TabsList className="flex flex-col gap-4 w-2/3 h-full bg-transparent">
                         {products.map((product) => (

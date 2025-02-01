@@ -23,7 +23,7 @@ export default function Header() {
 
     const navLinks = [
         { name: "Inicio", href: "/" },
-        { name: "Productos", href: "/productos" },
+        { name: "Productos", href: "/Products" },
     ];
 
     return (
@@ -42,7 +42,7 @@ export default function Header() {
             </div>
 
             <div className="container mx-auto px-4 h-full flex items-center justify-between relative">
-                <Link href="/" className="relative h-full w-40 hover:opacity-90 transition-opacity">
+                <Link href="/" className={`relative h-full ${isMobile ? "w-[70px]": "w-40"} hover:opacity-90 transition-opacity`}>
                     <Image
                         src={isMobile ? "/favicon.png" : "/logo.png"}
                         alt="Fadiar Logo"
