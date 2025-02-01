@@ -1,10 +1,8 @@
-// app/Products/ProductList.tsx
 "use client";
 
-import {useSearchParams} from "next/navigation";
-import {useState, useEffect} from "react";
+import { useSearchParams } from "next/navigation";
+import { useState, useEffect } from "react";
 import Image from "next/image";
-import Link from "next/link";
 
 interface Product {
     id: number;
@@ -34,6 +32,9 @@ export default function ProductList() {
     const [availabilityFilter, setAvailabilityFilter] = useState<"all" | "available" | "out">("all");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
     const searchTerm = searchParams.get('search') || '';
 
@@ -72,19 +73,19 @@ export default function ProductList() {
 
     const getPriceInCurrency = (prices: Array<[number, number, string]>) => {
         const directPrice = prices.find(p => p[2] === selectedCurrency);
-        if (directPrice) return {price: directPrice[1], currency: selectedCurrency};
+        if (directPrice) return { price: directPrice[1], currency: selectedCurrency };
 
         const originalCurrency = currencies.find(c => c.currency === prices[0][2]);
         const targetCurrency = currencies.find(c => c.currency === selectedCurrency);
 
         if (!originalCurrency || !targetCurrency) {
-            return {price: prices[0][1], currency: prices[0][2]};
+            return { price: prices[0][1], currency: prices[0][2] };
         }
 
         const priceInUSD = prices[0][1] / originalCurrency.value;
         const convertedPrice = priceInUSD * targetCurrency.value;
 
-        return {price: convertedPrice, currency: selectedCurrency};
+        return { price: convertedPrice, currency: selectedCurrency };
     };
 
     const filteredProducts = products
@@ -95,7 +96,7 @@ export default function ProductList() {
             filterBrand === "all" || product.brand.toLowerCase() === filterBrand.toLowerCase()
         )
         .filter(product => {
-            const {price} = getPriceInCurrency(product.prices);
+            const { price } = getPriceInCurrency(product.prices);
             return price >= minPrice && price <= maxPrice;
         })
         .filter(product => {
@@ -214,7 +215,7 @@ export default function ProductList() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     {filteredProducts.map(product => {
-                        const {price, currency} = getPriceInCurrency(product.prices);
+                        const { price, currency } = getPriceInCurrency(product.prices);
 
                         return (
                             <div
@@ -258,17 +259,19 @@ export default function ProductList() {
                                         >
                                           {product.count > 0 ? "Disponible" : "Agotado"}
                                         </span>
-                                        <Link
-                                            href={`/Products/${product.id}`}
+                                        <button
+                                            onClick={() => {
+                                                setSelectedProduct(product);
+                                                setIsModalOpen(true);
+                                            }}
                                             className="px-3 py-1 bg-[#022953] text-white rounded hover:bg-[#011a3a] text-sm"
                                         >
                                             Ver detalles
-                                        </Link>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
                         );
-
                     })}
                 </div>
 
@@ -278,6 +281,44 @@ export default function ProductList() {
                     </div>
                 )}
             </div>
+
+            {/* Modal */}
+            {isModalOpen && selectedProduct && (
+                <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-4xl">
+                        <div className="flex justify-between items-center mb-4">
+                            <h2 className="text-2xl font-semibold">{selectedProduct.name}</h2>
+                            <button
+                                onClick={() => setIsModalOpen(false)}
+                                className="text-xl text-gray-500 hover:text-gray-700"
+                            >
+                                &times;
+                            </button>
+                        </div>
+                        <div className="flex">
+                            <div className="w-1/3">
+                                <Image
+                                    src={`https://app.fadiar.com/api/${selectedProduct.img}`}
+                                    alt={selectedProduct.name}
+                                    width={300}
+                                    height={300}
+                                    className="object-cover"
+                                />
+                            </div>
+                            <div className="w-2/3 pl-6">
+                                <p className="text-lg text-gray-800">{selectedProduct.description}</p>
+                                <p className="text-xl font-bold text-[#022953] mt-4">
+                                    {getPriceInCurrency(selectedProduct.prices).price.toFixed(2)}{" "}
+                                    {getPriceInCurrency(selectedProduct.prices).currency}
+                                </p>
+                                <p className={`text-sm mt-4 ${selectedProduct.count > 0 ? "text-green-600" : "text-red-600"}`}>
+                                    {selectedProduct.count > 0 ? "Disponible" : "Agotado"}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </section>
     );
 }
