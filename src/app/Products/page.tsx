@@ -1,4 +1,7 @@
 // app/Products/page.tsx
+
+"use client"
+
 import { Suspense } from "react";
 import ProductList from "./ProductList";
 

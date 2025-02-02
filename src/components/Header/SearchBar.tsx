@@ -25,7 +25,7 @@ export default function SearchBar() {
                 }
 
                 if (!pathname.startsWith("/Products")) {
-                    router.push(`/productos?${params.toString()}`);
+                    router.push(`/Products?${params.toString()}`);
                 } else {
                     router.replace(`${pathname}?${params.toString()}`, { scroll: false });
                 }

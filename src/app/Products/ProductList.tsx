@@ -20,11 +20,24 @@ interface Currency {
     value: number;
 }
 
+const countryCurrencyMap: { [key: string]: string } = {
+    'US': 'USD',
+    'CU': 'CUP',
+    'ES': 'EUR',    // España
+    'FR': 'EUR',    // Francia
+    'DE': 'EUR',    // Alemania
+    'IT': 'EUR',    // Italia
+    'PT': 'EUR',    // Portugal
+    'AT': 'EUR',    // Austria
+};
+
 export default function ProductList() {
     const searchParams = useSearchParams();
     const [products, setProducts] = useState<Product[]>([]);
     const [currencies, setCurrencies] = useState<Currency[]>([]);
+    const [allowedCurrencies, setAllowedCurrencies] = useState<Currency[]>([]);
     const [selectedCurrency, setSelectedCurrency] = useState("CUP");
+    const [userCountry, setUserCountry] = useState("");
     const [sortBy, setSortBy] = useState("name");
     const [filterBrand, setFilterBrand] = useState("all");
     const [minPrice, setMinPrice] = useState(0);
@@ -32,22 +45,58 @@ export default function ProductList() {
     const [availabilityFilter, setAvailabilityFilter] = useState<"all" | "available" | "out">("all");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
     const searchTerm = searchParams.get('search') || '';
 
+    const getDefaultCurrency = (country: string) => {
+        if (country === 'CU') return 'CUP';
+        return countryCurrencyMap[country] || 'USD';
+    };
+
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch("https://app.fadiar.com/api/inventory");
-                if (!response.ok) throw new Error("Error al cargar los Products");
+                // Obtener datos de inventario
+                const inventoryResponse = await fetch("https://app.fadiar.com/api/inventory");
+                if (!inventoryResponse.ok) throw new Error("Error al cargar los productos");
+                const inventoryData = await inventoryResponse.json();
 
-                const data = await response.json();
-                setProducts(data.products);
-                setCurrencies(data.currencys.currencys);
+                // Obtener ubicación del usuario
+                let country = 'CU';
+                try {
+                    const countryResponse = await fetch("https://ipapi.co/json/");
+                    const countryData = await countryResponse.json();
+                    country = countryData.country_code;
+                } catch (err) {
+                    console.error("Error obteniendo ubicación:", err);
+                }
+
+                // Filtrar monedas según ubicación
+                let filteredCurrencies = inventoryData.currencys.currencys;
+                if (country === 'CU') {
+                    filteredCurrencies = filteredCurrencies.filter((c: Currency) =>
+                        ['CUP', 'MLC'].includes(c.currency)
+                    );
+                } else {
+                    filteredCurrencies = filteredCurrencies.filter((c: Currency) =>
+                        ['USD', 'EUR', 'MLC', 'CUP', 'ZELLE'].includes(c.currency)
+                    );
+                }
+
+                // Establecer valores iniciales
+                setUserCountry(country);
+                setCurrencies(inventoryData.currencys.currencys);
+                setAllowedCurrencies(filteredCurrencies);
+                setProducts(inventoryData.products);
+
+                // Establecer moneda por defecto
+                const defaultCurrency = getDefaultCurrency(country);
+                setSelectedCurrency(defaultCurrency);
+
                 setLoading(false);
+
             } catch (err) {
                 setError(err instanceof Error ? err.message : "Error desconocido");
                 setLoading(false);
@@ -59,11 +108,12 @@ export default function ProductList() {
 
     useEffect(() => {
         setMinPrice(0);
-        setMaxPrice(selectedCurrency === "CUP" ? 9999999999 : 9999999999);
+        setMaxPrice(9999999999);
     }, [selectedCurrency]);
 
     const resetFilters = () => {
-        setSelectedCurrency("CUP");
+        const defaultCurrency = getDefaultCurrency(userCountry);
+        setSelectedCurrency(defaultCurrency);
         setSortBy("name");
         setFilterBrand("all");
         setMinPrice(0);
@@ -148,7 +198,7 @@ export default function ProductList() {
                             onChange={(e) => setSelectedCurrency(e.target.value)}
                             className="px-3 py-2 border rounded-lg"
                         >
-                            {currencies.map(currency => (
+                            {allowedCurrencies.map(currency => (
                                 <option key={currency.currency} value={currency.currency}>
                                     {currency.currency}
                                 </option>
@@ -222,7 +272,6 @@ export default function ProductList() {
                                 key={product.id}
                                 className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow flex flex-col h-full"
                             >
-                                {/* Imagen del producto */}
                                 <div className="relative h-48 w-full">
                                     <Image
                                         src={`https://app.fadiar.com/api/${product.img}`}
@@ -234,9 +283,7 @@ export default function ProductList() {
                                     />
                                 </div>
 
-                                {/* Contenido del producto */}
                                 <div className="p-4 flex flex-col flex-1">
-                                    {/* Título y detalles */}
                                     <div className="mb-2">
                                         <h3 className="text-xl font-semibold">{product.name}</h3>
                                         <div className="flex justify-between items-center">
@@ -245,12 +292,10 @@ export default function ProductList() {
                                         </div>
                                     </div>
 
-                                    {/* Precio */}
                                     <p className="text-lg font-bold text-[#022953]">
                                         {price.toFixed(2)} {currency}
                                     </p>
 
-                                    {/* Disponibilidad y botón de detalles */}
                                     <div className="mt-auto flex justify-between items-center">
                                         <span
                                             className={`text-sm ${
@@ -282,7 +327,6 @@ export default function ProductList() {
                 )}
             </div>
 
-            {/* Modal */}
             {isModalOpen && selectedProduct && (
                 <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-4xl">
