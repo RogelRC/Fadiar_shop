@@ -107,7 +107,7 @@ function NavArrow({
                 alt=""
                 width={40}
                 height={40}
-                className={direction === "left" ? "rotate-180" : ""}
+                className={direction === "left" ? "" : "rotate-180"}
             />
         </button>
     );
