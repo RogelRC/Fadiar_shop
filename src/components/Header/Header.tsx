@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
-import { Suspense, useState, useEffect } from "react";
+import {usePathname} from "next/navigation";
+import {Suspense, useState, useEffect} from "react";
 import SearchBar from "./SearchBar";
+import {Menu} from "lucide-react";
 
 export default function Header() {
     const pathname = usePathname();
@@ -22,8 +23,8 @@ export default function Header() {
     }, []);
 
     const navLinks = [
-        { name: "Inicio", href: "/" },
-        { name: "Productos", href: "/Products" },
+        {name: "Inicio", href: "/"},
+        {name: "Productos", href: "/Products"},
     ];
 
     return (
@@ -38,11 +39,12 @@ export default function Header() {
                     transform: "scale(1.05)",
                 }}
             >
-                <div className="absolute inset-0" />
+                <div className="absolute inset-0"/>
             </div>
 
             <div className="container mx-auto px-4 h-full flex items-center justify-between relative">
-                <Link href="/" className={`relative h-full ${isMobile ? "w-[70px]": "w-40"} hover:opacity-90 transition-opacity`}>
+                <Link href="/"
+                      className={`relative h-full ${isMobile ? "w-[70px]" : "w-40"} hover:opacity-90 transition-opacity`}>
                     <Image
                         src={isMobile ? "/favicon.png" : "/logo.png"}
                         alt="Fadiar Logo"
@@ -52,8 +54,8 @@ export default function Header() {
                     />
                 </Link>
 
-                <Suspense fallback={<div className="w-full max-w-[500px] h-10 bg-gray-200 animate-pulse" />}>
-                    <SearchBar />
+                <Suspense fallback={<div className="w-full max-w-[500px] h-10 bg-gray-200 animate-pulse"/>}>
+                    <SearchBar/>
                 </Suspense>
 
                 {/* Menú de navegación */}
@@ -64,20 +66,12 @@ export default function Header() {
                             className="text-white focus:outline-none"
                         >
                             {/* Icono de menú hamburguesa */}
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
+                            <Menu
                                 className="h-6 w-6"
                                 fill="none"
                                 viewBox="0 0 24 24"
                                 stroke="currentColor"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M4 6h16M4 12h16m-7 6h7"
-                                />
-                            </svg>
+                            />
                         </button>
                     ) : (
                         <nav className="flex items-center gap-6">
@@ -85,8 +79,8 @@ export default function Header() {
                                 <Link
                                     key={link.href}
                                     href={link.href}
-                                    className={`text-sm font-medium transition-colors hover:text-blue-400 ${
-                                        pathname === link.href ? "text-blue-400" : "text-white"
+                                    className={`text-sm text-white transition-colors hover:text-blue-400 ${
+                                        pathname === link.href ? "font-extrabold" : ""
                                     }`}
                                 >
                                     {link.name}

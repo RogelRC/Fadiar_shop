@@ -66,7 +66,7 @@ export default function TopSells() {
             {/* Header */}
             <div className="flex w-full h-[10vh] px-14 pt-2 text-white font-bold">
                 <h1 className="flex w-full h-full text-5xl">Productos destacados</h1>
-                <Link href="/productos" className="flex w-full h-full justify-end items-center hover:text-blue-300">
+                <Link href="/Products" className="flex w-full h-full justify-end items-center hover:text-blue-300">
                     Ver más {">"}
                 </Link>
             </div>

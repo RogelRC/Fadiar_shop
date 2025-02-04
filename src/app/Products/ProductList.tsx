@@ -20,17 +20,6 @@ interface Currency {
     value: number;
 }
 
-const countryCurrencyMap: { [key: string]: string } = {
-    'US': 'USD',
-    'CU': 'CUP',
-    'ES': 'EUR',    // España
-    'FR': 'EUR',    // Francia
-    'DE': 'EUR',    // Alemania
-    'IT': 'EUR',    // Italia
-    'PT': 'EUR',    // Portugal
-    'AT': 'EUR',    // Austria
-};
-
 export default function ProductList() {
     const searchParams = useSearchParams();
     const [products, setProducts] = useState<Product[]>([]);
@@ -52,7 +41,7 @@ export default function ProductList() {
 
     const getDefaultCurrency = (country: string) => {
         if (country === 'CU') return 'CUP';
-        return countryCurrencyMap[country] || 'USD';
+        return 'USD';
     };
 
     useEffect(() => {
@@ -77,11 +66,11 @@ export default function ProductList() {
                 let filteredCurrencies = inventoryData.currencys.currencys;
                 if (country === 'CU') {
                     filteredCurrencies = filteredCurrencies.filter((c: Currency) =>
-                        ['CUP', 'MLC'].includes(c.currency)
+                        ['CUP'].includes(c.currency)
                     );
                 } else {
                     filteredCurrencies = filteredCurrencies.filter((c: Currency) =>
-                        ['USD', 'EUR', 'MLC', 'CUP', 'ZELLE'].includes(c.currency)
+                        ['USD'].includes(c.currency)
                     );
                 }
 
