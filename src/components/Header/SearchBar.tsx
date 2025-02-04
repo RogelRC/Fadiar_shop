@@ -65,7 +65,7 @@ export default function SearchBar() {
                     focus-visible:border-b-blue-500
                     pr-10
                     text-white
-                    placeholder:text-gray-400
+                    placeholder:text-white
                     outline-none
                     focus:outline-none
                     focus-visible:outline-none
@@ -73,7 +73,7 @@ export default function SearchBar() {
                     ring-offset-0
                 "
             />
-            <Search className="h-5 w-5 absolute right-0 text-gray-400" />
+            <Search className="h-5 w-5 absolute right-0 text-white" />
         </div>
     );
 }

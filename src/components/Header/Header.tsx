@@ -29,18 +29,20 @@ export default function Header() {
 
     return (
         <header className="fixed top-0 w-full h-[10vh] z-50 bg-black">
-            <div
-                className="absolute inset-0 backdrop-blur-md"
-                style={{
-                    backgroundImage: "url('/landscape.webp')",
-                    backgroundSize: "cover",
-                    backgroundPosition: "center",
-                    filter: "blur(4px)",
-                    transform: "scale(1.05)",
-                }}
-            >
+            <div className="absolute inset-0 overflow-hidden">
+                <div
+                    className="absolute inset-0 backdrop-blur-md"
+                    style={{
+                        backgroundImage: "url('/landscape.webp')",
+                        backgroundSize: "cover",
+                        backgroundPosition: "center",
+                        filter: "blur(4px)",
+                        transform: "scale(1.05)",
+                    }}
+                />
                 <div className="absolute inset-0"/>
             </div>
+
 
             <div className="container mx-auto px-4 h-full flex items-center justify-between relative">
                 <Link href="/"
