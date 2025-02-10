@@ -182,6 +182,7 @@ export default function ProductList() {
                     <h1 className="text-3xl font-bold text-[#022953]">Catálogo Completo</h1>
 
                     <div className="flex flex-wrap gap-4">
+                        {/*
                         <select
                             value={selectedCurrency}
                             onChange={(e) => setSelectedCurrency(e.target.value)}
@@ -193,6 +194,7 @@ export default function ProductList() {
                                 </option>
                             ))}
                         </select>
+                        */}
 
                         <select
                             value={availabilityFilter}

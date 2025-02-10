@@ -12,6 +12,17 @@ export default function SearchBar() {
     const pathname = usePathname();
     const searchParams = useSearchParams();
     const [searchQuery, setSearchQuery] = useState(searchParams?.get("search") || "");
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        const mediaQuery = window.matchMedia("(max-width: 640px)");
+        setIsMobile(mediaQuery.matches);
+
+        const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+        mediaQuery.addEventListener("change", handler);
+
+        return () => mediaQuery.removeEventListener("change", handler);
+    }, []);
 
     const debouncedSearch = useMemo(
         () =>
@@ -50,7 +61,7 @@ export default function SearchBar() {
         <div className="relative flex w-full max-w-[500px] items-center">
             <Input
                 type="text"
-                placeholder="Buscar productos..."
+                placeholder={isMobile ? "" : "Buscar productos..."}
                 value={searchQuery}
                 onChange={handleInputChange}
                 className="

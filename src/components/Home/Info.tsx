@@ -7,22 +7,18 @@ const features = [
     {
         icon: "/Iconos-03.svg",
         title: "Productividad",
-        description: "Soluciones que optimizan tus procesos industriales"
     },
     {
         icon: "/Iconos-04.svg",
         title: "Comunicación",
-        description: "Sistemas integrados para una coordinación perfecta"
     },
     {
         icon: "/Iconos-01.svg",
         title: "Entrega a tiempo",
-        description: "Logística garantizada con estándares internacionales"
     },
     {
         icon: "/Iconos-02.svg",
         title: "Recogida de pedidos",
-        description: "Servicio express disponible 24/7"
     }
 ];
 
@@ -31,7 +27,7 @@ export default function Info() {
         <section className="py-20 bg-gray-50">
             <div className="container mx-auto px-4">
                 {/* Sección de características */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-20">
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 mb-20">
                     {features.map((feature, index) => (
                         <Card key={index} className="hover:shadow-lg transition-shadow">
                             <CardContent className="p-6 flex flex-col items-center text-center">
@@ -44,7 +40,6 @@ export default function Info() {
                                     />
                                 </div>
                                 <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
-                                <p className="text-gray-600">{feature.description}</p>
                             </CardContent>
                         </Card>
                     ))}
