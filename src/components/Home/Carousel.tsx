@@ -18,9 +18,10 @@ type GridSpan = {
 };
 
 const spanVariants: GridSpan[] = [
-    { rows: 2, cols: 2 },  // 2x2
-    { rows: 2, cols: 3 },  // 2x3
-    { rows: 4, cols: 2 },  // 4x2
+    { rows: 2, cols: 2 }, // 2x2
+    { rows: 2, cols: 3 }, // 2x3 (antes era 2x4)
+    { rows: 4, cols: 2 }, // 4x2 (cuando es 4x2 la imagen va arriba y el texto abajo)
+    { rows: 4, cols: 3 }, // 4x3
 ];
 
 const getRandomBackground = () => {
@@ -64,7 +65,7 @@ export default function Carousel() {
                     availableSpans = spanVariants;
                 } else {
                     const remainingRows = 4 - rowCounter;
-                    availableSpans = spanVariants.filter(s => s.rows === remainingRows);
+                    availableSpans = spanVariants.filter((s) => s.rows <= remainingRows);
                 }
 
                 if (availableSpans.length === 0) {
@@ -86,7 +87,10 @@ export default function Carousel() {
         }
     }, [products]);
 
-    const handleDragEnd = (_e: PointerEvent, { offset, velocity }: { offset: { x: number }; velocity: { x: number } }) => {
+    const handleDragEnd = (
+        _e: PointerEvent,
+        { offset, velocity }: { offset: { x: number }; velocity: { x: number } }
+    ) => {
         const newX = x.get() + offset.x;
         const containerWidth = containerRef.current?.offsetWidth || 0;
         const totalWidth = containerRef.current?.scrollWidth || 0;
@@ -102,7 +106,7 @@ export default function Carousel() {
                 const currentX = x.get();
                 const wrappedX = ((currentX % totalWidth) + totalWidth) % totalWidth;
                 x.set(wrappedX - totalWidth);
-            }
+            },
         });
     };
 
@@ -127,8 +131,6 @@ export default function Carousel() {
                     >
                         {clonedProducts.map((product, index) => {
                             const span = spans[index] || { rows: 2, cols: 2 };
-                            const is2x2 = span.rows === 2 && span.cols === 2;
-                            const is2x3 = span.rows === 2 && span.cols === 3;
                             const is4x2 = span.rows === 4 && span.cols === 2;
 
                             return (
@@ -141,8 +143,8 @@ export default function Carousel() {
                                         backgroundColor: backgrounds[index],
                                     }}
                                 >
-                                    <div className={`w-full h-full flex flex-col`}>
-                                        <div className={`relative flex-1 ${is4x2 ? 'order-1' : ''}`}>
+                                    <div className="w-full h-full flex flex-col">
+                                        <div className={`relative flex-1 ${is4x2 ? "order-1" : ""}`}>
                                             <Image
                                                 src={`https://app.fadiar.com/api/${product.img}`}
                                                 alt={product.name}
@@ -152,7 +154,7 @@ export default function Carousel() {
                                                 priority={index < 6}
                                             />
                                         </div>
-                                        <div className={`mt-4 ${is4x2 ? 'order-2' : ''}`}>
+                                        <div className={`mt-4 ${is4x2 ? "order-2" : ""}`}>
                                             <h3 className="font-semibold text-gray-800 text-xl">{product.name}</h3>
                                             <p className="font-bold text-[#022953] text-lg">
                                                 {product.price} {product.currency}
