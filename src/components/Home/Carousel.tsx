@@ -25,9 +25,10 @@ const spanVariants: GridSpan[] = [
 ];
 
 const getRandomBackground = () => {
-    const colors = ["#FFFFFF", "#E0F7FA"]; // Blanco y azul celeste
+    const colors = ["#E8EEEE", "#F5F5F5", "#C7D6E7"];
     return colors[Math.floor(Math.random() * colors.length)];
 };
+
 
 export default function Carousel() {
     const [products, setProducts] = useState<Product[]>([]);

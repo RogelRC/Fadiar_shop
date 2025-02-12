@@ -4,6 +4,7 @@
 
 import { Suspense } from "react";
 import ProductList from "./ProductList";
+import Coming from "@/components/Coming/Coming";
 
 export default function ProductosPage() {
     return (
@@ -13,6 +14,7 @@ export default function ProductosPage() {
             </div>
         }>
             <ProductList />
+            <Coming/>
         </Suspense>
     );
 }
