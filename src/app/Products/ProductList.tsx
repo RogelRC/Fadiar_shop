@@ -3,6 +3,8 @@
 import { useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import Image from "next/image";
+import { Filter } from 'lucide-react';
+
 
 interface Product {
     id: number;
@@ -36,6 +38,7 @@ export default function ProductList() {
     const [error, setError] = useState<string | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+    const [showFilters, setShowFilters] = useState(false);
 
     const searchTerm = searchParams.get('search') || '';
 
@@ -179,78 +182,84 @@ export default function ProductList() {
         <section className="min-h-screen bg-gray-50 py-8">
             <div className="container mx-auto px-4">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-                    <h1 className="text-3xl font-bold text-[#022953]">Catálogo Completo</h1>
+                    <h1 className="text-3xl font-bold text-[#022953]">Productos</h1>
 
-                    <div className="flex flex-wrap gap-4">
-                        {/*
-                        <select
-                            value={selectedCurrency}
-                            onChange={(e) => setSelectedCurrency(e.target.value)}
-                            className="px-3 py-2 border rounded-lg"
-                        >
-                            {allowedCurrencies.map(currency => (
-                                <option key={currency.currency} value={currency.currency}>
-                                    {currency.currency}
-                                </option>
-                            ))}
-                        </select>
-                        */}
-
-                        <select
-                            value={availabilityFilter}
-                            onChange={(e) => setAvailabilityFilter(e.target.value as "all" | "available" | "out")}
-                            className="px-3 py-2 border rounded-lg"
-                        >
-                            <option value="all">Todos</option>
-                            <option value="available">Disponibles</option>
-                            <option value="out">Agotados</option>
-                        </select>
-
-                        <select
-                            value={sortBy}
-                            onChange={(e) => setSortBy(e.target.value)}
-                            className="px-3 py-2 border rounded-lg"
-                        >
-                            <option value="name">Ordenar por nombre</option>
-                            <option value="price-asc">Precio: Menor a Mayor</option>
-                            <option value="price-desc">Precio: Mayor a Menor</option>
-                        </select>
-
-                        <select
-                            value={filterBrand}
-                            onChange={(e) => setFilterBrand(e.target.value)}
-                            className="px-3 py-2 border rounded-lg"
-                        >
-                            <option value="all">Todas las marcas</option>
-                            {[...new Set(products.map(p => p.brand))].map(brand => (
-                                <option key={brand} value={brand}>{brand}</option>
-                            ))}
-                        </select>
-
-                        <div className="flex flex-col">
-                            <label className="text-sm">Rango de precios:</label>
-                            <div className="flex gap-2">
-                                <input
-                                    type="number"
-                                    value={minPrice}
-                                    onChange={(e) => setMinPrice(Number(e.target.value))}
-                                    className="w-20 px-2 py-1 border rounded"
+                    <div className="flex flex-col md:flex-row gap-4 items-center">
+                        <div className="flex items-center space-x-4">
+                            <span className="text-sm text-gray-700">Filtrar por</span>
+                            <button
+                                className="p-2 border rounded-full hover:bg-gray-100"
+                                onClick={() => setShowFilters(!showFilters)}
+                            >
+                                <Image
+                                    src="/filter-icon.svg"  // Asegúrate de que la ruta sea correcta
+                                    alt="Icono de filtro"
+                                    width={30}
+                                    height={30}
                                 />
-                                <span>-</span>
-                                <input
-                                    type="number"
-                                    value={maxPrice}
-                                    onChange={(e) => setMaxPrice(Number(e.target.value))}
-                                    className="w-20 px-2 py-1 border rounded"
-                                />
-                            </div>
+                            </button>
                         </div>
-                        <button
-                            onClick={resetFilters}
-                            className="px-4 py-2 bg-[#EFEFEF] text-black border rounded-lg hover:bg-gray-300"
-                        >
-                            Reiniciar filtros
-                        </button>
+
+                        {showFilters && (
+                            <div className="flex flex-wrap gap-4">
+                                {/* Aquí van todos tus filtros */}
+                                <select
+                                    value={availabilityFilter}
+                                    onChange={(e) => setAvailabilityFilter(e.target.value as "all" | "available" | "out")}
+                                    className="px-3 py-2 border rounded-lg"
+                                >
+                                    <option value="all">Todos</option>
+                                    <option value="available">Disponibles</option>
+                                    <option value="out">Agotados</option>
+                                </select>
+
+                                <select
+                                    value={sortBy}
+                                    onChange={(e) => setSortBy(e.target.value)}
+                                    className="px-3 py-2 border rounded-lg"
+                                >
+                                    <option value="name">Ordenar por nombre</option>
+                                    <option value="price-asc">Precio: Menor a Mayor</option>
+                                    <option value="price-desc">Precio: Mayor a Menor</option>
+                                </select>
+
+                                <select
+                                    value={filterBrand}
+                                    onChange={(e) => setFilterBrand(e.target.value)}
+                                    className="px-3 py-2 border rounded-lg"
+                                >
+                                    <option value="all">Todas las marcas</option>
+                                    {[...new Set(products.map(p => p.brand))].map(brand => (
+                                        <option key={brand} value={brand}>{brand}</option>
+                                    ))}
+                                </select>
+
+                                <div className="flex flex-col">
+                                    <label className="text-sm">Rango de precios:</label>
+                                    <div className="flex gap-2">
+                                        <input
+                                            type="number"
+                                            value={minPrice}
+                                            onChange={(e) => setMinPrice(Number(e.target.value))}
+                                            className="w-20 px-2 py-1 border rounded"
+                                        />
+                                        <span>-</span>
+                                        <input
+                                            type="number"
+                                            value={maxPrice}
+                                            onChange={(e) => setMaxPrice(Number(e.target.value))}
+                                            className="w-20 px-2 py-1 border rounded"
+                                        />
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={resetFilters}
+                                    className="px-4 py-2 bg-[#EFEFEF] text-black border rounded-lg hover:bg-gray-300"
+                                >
+                                    Reiniciar filtros
+                                </button>
+                            </div>
+                        )}
                     </div>
                 </div>
 
