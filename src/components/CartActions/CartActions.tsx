@@ -19,14 +19,15 @@ interface CartItem {
   user_id: number;
   product_id: number;
   quantity: number;
+  is_purchased: boolean;
+  added_at: string;
 }
 
 interface CartActionsProps {
   product: Product;
 }
 
-const CART_API_BASE = "https://app.fadiar.com/api/carts"; // Endpoint del backend para el carrito
-const USER_ID = 1; // Usuario fijo para efectos de demostración
+const CART_API_BASE = "http://localhost/carts";
 
 export default function CartActions({ product }: CartActionsProps) {
   const [cartItem, setCartItem] = useState<CartItem | null>(null);
@@ -36,18 +37,26 @@ export default function CartActions({ product }: CartActionsProps) {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [showCart, setShowCart] = useState(false);
 
-  // Al montar el componente se consulta el carrito
+  // Retrieve token from storage
+  const getAuthToken = () => {
+    return localStorage.getItem('token'); // Adjust based on your auth setup
+  };
+
   useEffect(() => {
     fetchCart();
   }, []);
 
   const fetchCart = async () => {
     try {
-      const res = await fetch(CART_API_BASE);
+      const token = getAuthToken();
+      const res = await fetch(CART_API_BASE, {
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        },
+      });
       if (!res.ok) throw new Error("Error al obtener el carrito");
       const data = await res.json();
       setCartItems(data);
-      // Si el producto ya está en el carrito, se actualiza el estado
       const item = data.find((item: CartItem) => item.product_id === product.id);
       if (item) {
         setCartItem(item);
@@ -62,13 +71,14 @@ export default function CartActions({ product }: CartActionsProps) {
     setLoading(true);
     setError(null);
     try {
+      const token = getAuthToken();
       const res = await fetch(CART_API_BASE, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
         },
         body: JSON.stringify({
-          user_id: USER_ID,
           product_id: product.id,
           quantity: quantity,
         }),
@@ -79,7 +89,6 @@ export default function CartActions({ product }: CartActionsProps) {
       }
       const newCartItem = await res.json();
       setCartItem(newCartItem);
-      // Actualizamos la lista del carrito
       fetchCart();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error desconocido");
@@ -93,10 +102,12 @@ export default function CartActions({ product }: CartActionsProps) {
     setLoading(true);
     setError(null);
     try {
+      const token = getAuthToken();
       const res = await fetch(`${CART_API_BASE}/${cartItem.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
         },
         body: JSON.stringify({
           quantity: quantity,
