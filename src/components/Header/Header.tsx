@@ -14,11 +14,11 @@ export default function Header() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
 
-    // Verificar estado de autenticación al cargar
+    // Verificar estado de autenticación
     useEffect(() => {
-        const token = localStorage.getItem("authToken");
-        setIsLoggedIn(!!token);
-    }, []);
+        const userData = localStorage.getItem("userData");
+        setIsLoggedIn(!!userData);
+    }, [pathname]); // Actualizar al cambiar de ruta
 
     // Detectar tamaño de pantalla
     useEffect(() => {
@@ -31,26 +31,20 @@ export default function Header() {
         return () => mediaQuery.removeEventListener("change", handler);
     }, []);
 
-    // Detectar clics fuera del menú para cerrarlo
+    // Cerrar menú al hacer clic fuera
     useEffect(() => {
-        function handleClickOutside(event: MouseEvent) {
+        const handleClickOutside = (event: MouseEvent) => {
             if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
                 setIsMenuOpen(false);
             }
-        }
+        };
 
-        if (isMenuOpen) {
-            document.addEventListener("mousedown", handleClickOutside);
-        } else {
-            document.removeEventListener("mousedown", handleClickOutside);
-        }
-
+        document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, [isMenuOpen]);
 
     // Manejar cierre de sesión
     const handleLogout = () => {
-        localStorage.removeItem("authToken");
         localStorage.removeItem("userData");
         setIsLoggedIn(false);
         setIsMenuOpen(false);
@@ -136,14 +130,7 @@ export default function Header() {
                                     {link.name}
                                 </Link>
                             ))}
-                            {!isLoggedIn ? (
-                                <Link
-                                    href="/login"
-                                    className="bg-white text-[#022953] px-8 py-3 rounded-lg hover:bg-[#011a3a] hover:text-white transition-colors"
-                                >
-                                    Autenticarse
-                                </Link>
-                            ) : (
+                            {isLoggedIn ? (
                                 <div className="relative group">
                                     <button className="flex items-center gap-2 text-white">
                                         <img
@@ -167,6 +154,13 @@ export default function Header() {
                                         </button>
                                     </div>
                                 </div>
+                            ) : (
+                                <Link
+                                    href="/login"
+                                    className="bg-white text-[#022953] px-8 py-3 rounded-lg hover:bg-[#011a3a] hover:text-white transition-colors"
+                                >
+                                    Autenticarse
+                                </Link>
                             )}
                         </nav>
                     )}

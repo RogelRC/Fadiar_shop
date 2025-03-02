@@ -25,8 +25,10 @@ export default function TopSells() {
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
     const [isExpanded, setIsExpanded] = useState(false);
 
+    const API = process.env.NEXT_PUBLIC_API;
+
     useEffect(() => {
-        fetch("https://app.fadiar.com/api/mas_vendidos", {
+        fetch(`${API}/mas_vendidos`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

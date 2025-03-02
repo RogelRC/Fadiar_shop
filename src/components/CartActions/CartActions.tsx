@@ -1,95 +1,135 @@
-// components/CartActions.tsx
 "use client";
 
 import { useEffect, useState } from "react";
+import FloatingCart from "./FloatingCart";
 
 interface Product {
   id: number;
   name: string;
-  brand: string;
-  model: string;
-  img: string;
-  description: string;
   prices: Array<[number, number, string]>;
-  count: number;
 }
 
-interface CartItem {
-  id: number;
-  user_id: number;
-  product_id: number;
-  quantity: number;
-  is_purchased: boolean;
-  added_at: string;
+interface CartData {
+  carrito: Array<{
+    id: number;
+    name: string;
+    en_carrito: number;
+    restante: number;
+    aliveUntil: number;
+    prices: Array<[number, number, string]>;
+    img: string;
+    brand: string;
+    model: string;
+  }>;
+  expiran: boolean;
+}
+
+interface CartActionsProps {
+  product: Product;
+  onUpdate: (newQuantity: number) => void;
 }
 
 interface CartActionsProps {
   product: Product;
 }
 
-const CART_API_BASE = "http://localhost/carts";
+const API = process.env.NEXT_PUBLIC_API;
 
 export default function CartActions({ product }: CartActionsProps) {
-  const [cartItem, setCartItem] = useState<CartItem | null>(null);
   const [quantity, setQuantity] = useState(1);
+  const [availableQuantity, setAvailableQuantity] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
-  const [showCart, setShowCart] = useState(false);
+  const [cartData, setCartData] = useState<CartData | null>(null);
 
-  // Retrieve token from storage
-  const getAuthToken = () => {
-    return localStorage.getItem('token'); // Adjust based on your auth setup
+  const getCurrentUserId = () => {
+    const userData = localStorage.getItem("userData");
+    return userData ? JSON.parse(userData).userId : null;
   };
 
-  useEffect(() => {
-    fetchCart();
-  }, []);
-
   const fetchCart = async () => {
+    const userId = getCurrentUserId();
+    if (!userId) return;
+
     try {
-      const token = getAuthToken();
-      const res = await fetch(CART_API_BASE, {
-        headers: {
-          "Authorization": `Bearer ${token}`,
-        },
+      const response = await fetch(`${API}/obtener_productos_carrito`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id_user_action: userId,
+          id_user: userId,
+          comisiones: false
+        }),
       });
-      if (!res.ok) throw new Error("Error al obtener el carrito");
-      const data = await res.json();
-      setCartItems(data);
-      const item = data.find((item: CartItem) => item.product_id === product.id);
-      if (item) {
-        setCartItem(item);
-        setQuantity(item.quantity);
-      }
+
+      const data = await response.json();
+      setCartData(data.carrito?.length > 0 ? data : null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Error desconocido");
+      setError("Error al cargar el carrito");
+    }
+  };
+
+  const fetchAvailableQuantity = async () => {
+    const userId = getCurrentUserId();
+    if (!userId) return;
+
+    try {
+      const response = await fetch(`${API}/cantidad_restante_producto`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id_user_action: userId,
+          id_product: product.id,
+        }),
+      });
+
+      const data = await response.json();
+      setAvailableQuantity(data.cantidad);
+    } catch (err) {
+      setError("Error al cargar disponibilidad");
     }
   };
 
   const handleAddToCart = async () => {
     setLoading(true);
-    setError(null);
     try {
-      const token = getAuthToken();
-      const res = await fetch(CART_API_BASE, {
+      const userId = getCurrentUserId();
+      if (!userId) throw new Error("Debes iniciar sesión");
+  
+      const response = await fetch(`${API}/agregar_producto_carrito`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          product_id: product.id,
-          quantity: quantity,
+          id_user_action: userId,
+          id_user: userId,
+          id_product: product.id,
+          count: quantity,
         }),
       });
-      if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.detail || "Error al agregar al carrito");
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Error al agregar al carrito");
       }
-      const newCartItem = await res.json();
-      setCartItem(newCartItem);
-      fetchCart();
+      
+      
+      // Actualización optimizada
+      const newCartResponse = await fetch(`${API}/obtener_productos_carrito`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id_user_action: userId,
+          id_user: userId,
+          comisiones: false
+        }),
+      });
+      
+      const newCartData = await newCartResponse.json();
+      setCartData(newCartData.carrito?.length > 0 ? newCartData : null);
+      
+      await fetchAvailableQuantity();
+      setQuantity(1);
+  
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error desconocido");
     } finally {
@@ -97,100 +137,48 @@ export default function CartActions({ product }: CartActionsProps) {
     }
   };
 
-  const handleUpdateCart = async () => {
-    if (!cartItem) return;
-    setLoading(true);
-    setError(null);
-    try {
-      const token = getAuthToken();
-      const res = await fetch(`${CART_API_BASE}/${cartItem.id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          quantity: quantity,
-        }),
-      });
-      if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.detail || "Error al actualizar el carrito");
-      }
-      const updatedItem = await res.json();
-      setCartItem(updatedItem);
-      fetchCart();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Error desconocido");
-    } finally {
-      setLoading(false);
-    }
-  };
+  useEffect(() => {
+    const loadData = async () => {
+      await Promise.all([fetchAvailableQuantity(), fetchCart()]);
+    };
+    loadData();
+  }, []);
 
   return (
-    <div className="mt-8">
-      <h2 className="text-2xl font-bold mb-4">Acciones de Carrito</h2>
-      {error && <p className="text-red-500 mb-4">{error}</p>}
-      <div className="flex items-center gap-4">
-        <label htmlFor="quantity" className="font-medium">
-          Cantidad:
-        </label>
+    <div className="mt-4">
+      {error && <div className="text-red-500 mb-2 text-sm">{error}</div>}
+      
+      <div className="flex items-center gap-2">
         <input
           type="number"
-          id="quantity"
           min="1"
-          max={product.count}
+          max={availableQuantity}
           value={quantity}
-          onChange={(e) => setQuantity(Number(e.target.value))}
-          className="border p-2 rounded w-20"
+          onChange={(e) => {
+            const value = Math.max(1, Math.min(availableQuantity, Number(e.target.value)));
+            setQuantity(value);
+          }}
+          className="border p-1 rounded w-16 text-center"
+          disabled={availableQuantity === 0}
         />
-        {cartItem ? (
-          <button
-            onClick={handleUpdateCart}
-            disabled={loading}
-            className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
-          >
-            Actualizar Carrito
-          </button>
-        ) : (
-          <button
-            onClick={handleAddToCart}
-            disabled={loading}
-            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-          >
-            Agregar al Carrito
-          </button>
-        )}
-      </div>
-      {loading && (
-        <div className="mt-4">
-          <p>Cargando...</p>
-        </div>
-      )}
-      <div className="mt-6">
+        
         <button
-          onClick={() => setShowCart(!showCart)}
-          className="underline text-blue-500"
+          onClick={handleAddToCart}
+          disabled={loading || availableQuantity === 0}
+          className={`px-4 py-2 text-sm rounded transition-colors ${
+            loading ? "bg-gray-400" 
+            : availableQuantity === 0 ? "bg-gray-300 cursor-not-allowed" 
+            : "bg-blue-500 hover:bg-blue-600 text-white"
+          }`}
         >
-          {showCart ? "Ocultar Carrito" : "Ver Carrito"}
+          {loading ? "Agregando..." : "Agregar al carrito"}
         </button>
-        {showCart && (
-          <div className="mt-4 border p-4 rounded">
-            <h3 className="text-xl font-semibold mb-2">Items en el Carrito</h3>
-            {cartItems.length === 0 ? (
-              <p>No hay items en el carrito.</p>
-            ) : (
-              <ul>
-                {cartItems.map((item) => (
-                  <li key={item.id}>
-                    Producto ID: {item.product_id} - Cantidad: {item.quantity}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-        )}
       </div>
+
+      {/* Botón flotante siempre visible cuando hay items */}
+      {cartData?.carrito && cartData.carrito.length > 0 && (
+        <FloatingCart cartData={cartData} />
+      )}
     </div>
   );
 }

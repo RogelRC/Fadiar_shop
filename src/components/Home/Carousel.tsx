@@ -17,6 +17,8 @@ type GridSpan = {
     cols: number;
 };
 
+const API = process.env.NEXT_PUBLIC_API;
+
 const spanVariants: GridSpan[] = [
     { rows: 2, cols: 2 }, // 2x2
     { rows: 2, cols: 3 }, // 2x3 (antes era 2x4)
@@ -41,7 +43,7 @@ export default function Carousel() {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const response = await fetch("https://app.fadiar.com/api/inventory");
+                const response = await fetch(`${API}/inventory`);
                 const data = await response.json();
                 setProducts(data.products);
             } catch (error) {
