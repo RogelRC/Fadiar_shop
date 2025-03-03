@@ -78,3 +78,16 @@ body {
   }
 }
 
+.toggle-checkbox:checked {
+  right: 0;
+  border-color: #022953;
+  background-color: #022953;
+}
+
+.toggle-checkbox:checked + .toggle-label {
+  background-color: #022953;
+}
+
+.toggle-checkbox {
+  right: 1.5rem;
+}

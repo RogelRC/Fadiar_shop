@@ -26,11 +26,6 @@ interface CartData {
 
 interface CartActionsProps {
   product: Product;
-  onUpdate: (newQuantity: number) => void;
-}
-
-interface CartActionsProps {
-  product: Product;
 }
 
 const API = process.env.NEXT_PUBLIC_API;
@@ -58,7 +53,7 @@ export default function CartActions({ product }: CartActionsProps) {
         body: JSON.stringify({
           id_user_action: userId,
           id_user: userId,
-          comisiones: false
+          comisiones: false,
         }),
       });
 
@@ -95,7 +90,7 @@ export default function CartActions({ product }: CartActionsProps) {
     try {
       const userId = getCurrentUserId();
       if (!userId) throw new Error("Debes iniciar sesión");
-  
+
       const response = await fetch(`${API}/agregar_producto_carrito`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -106,13 +101,12 @@ export default function CartActions({ product }: CartActionsProps) {
           count: quantity,
         }),
       });
-  
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || "Error al agregar al carrito");
       }
-      
-      
+
       // Actualización optimizada
       const newCartResponse = await fetch(`${API}/obtener_productos_carrito`, {
         method: "POST",
@@ -120,16 +114,15 @@ export default function CartActions({ product }: CartActionsProps) {
         body: JSON.stringify({
           id_user_action: userId,
           id_user: userId,
-          comisiones: false
+          comisiones: false,
         }),
       });
-      
+
       const newCartData = await newCartResponse.json();
       setCartData(newCartData.carrito?.length > 0 ? newCartData : null);
-      
+
       await fetchAvailableQuantity();
       setQuantity(1);
-  
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error desconocido");
     } finally {
@@ -138,47 +131,56 @@ export default function CartActions({ product }: CartActionsProps) {
   };
 
   useEffect(() => {
+    // Carga inicial de datos
     const loadData = async () => {
       await Promise.all([fetchAvailableQuantity(), fetchCart()]);
     };
     loadData();
-  }, []);
+
+    // Configurar intervalo para actualizar la disponibilidad cada 5 segundos
+    const intervalId = setInterval(fetchAvailableQuantity, 5000);
+
+    // Limpiar el intervalo al desmontar el componente
+    return () => clearInterval(intervalId);
+  }, [product.id]); // Dependencia en product.id
 
   return (
-    <div className="mt-4">
-      {error && <div className="text-red-500 mb-2 text-sm">{error}</div>}
-      
-      <div className="flex items-center gap-2">
-        <input
-          type="number"
-          min="1"
-          max={availableQuantity}
-          value={quantity}
-          onChange={(e) => {
-            const value = Math.max(1, Math.min(availableQuantity, Number(e.target.value)));
-            setQuantity(value);
-          }}
-          className="border p-1 rounded w-16 text-center"
-          disabled={availableQuantity === 0}
-        />
-        
-        <button
-          onClick={handleAddToCart}
-          disabled={loading || availableQuantity === 0}
-          className={`px-4 py-2 text-sm rounded transition-colors ${
-            loading ? "bg-gray-400" 
-            : availableQuantity === 0 ? "bg-gray-300 cursor-not-allowed" 
-            : "bg-blue-500 hover:bg-blue-600 text-white"
-          }`}
-        >
-          {loading ? "Agregando..." : "Agregar al carrito"}
-        </button>
-      </div>
+      <div className="mt-4">
+        {error && <div className="text-red-500 mb-2 text-sm">{error}</div>}
 
-      {/* Botón flotante siempre visible cuando hay items */}
-      {cartData?.carrito && cartData.carrito.length > 0 && (
-        <FloatingCart cartData={cartData} />
-      )}
-    </div>
+        <div className="flex items-center gap-2">
+          <input
+              type="number"
+              min="1"
+              max={availableQuantity}
+              value={quantity}
+              onChange={(e) => {
+                const value = Math.max(1, Math.min(availableQuantity, Number(e.target.value)));
+                setQuantity(value);
+              }}
+              className="border p-1 rounded w-16 text-center"
+              disabled={availableQuantity === 0}
+          />
+
+          <button
+              onClick={handleAddToCart}
+              disabled={loading || availableQuantity === 0}
+              className={`px-4 py-2 text-sm rounded transition-colors ${
+                  loading
+                      ? "bg-gray-400"
+                      : availableQuantity === 0
+                          ? "bg-gray-300 cursor-not-allowed"
+                          : "bg-blue-500 hover:bg-blue-600 text-white"
+              }`}
+          >
+            {loading ? "Agregando..." : "Agregar al carrito"}
+          </button>
+        </div>
+
+        {/* Botón flotante siempre visible cuando hay items */}
+        {cartData?.carrito && cartData.carrito.length > 0 && (
+            <FloatingCart cartData={cartData} />
+        )}
+      </div>
   );
 }
