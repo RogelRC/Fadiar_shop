@@ -11,8 +11,10 @@ export default function Header() {
     const pathname = usePathname();
     const [isMobile, setIsMobile] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
+    const userMenuRef = useRef<HTMLDivElement>(null);
 
     // Verificar estado de autenticación
     useEffect(() => {
@@ -31,23 +33,26 @@ export default function Header() {
         return () => mediaQuery.removeEventListener("change", handler);
     }, []);
 
-    // Cerrar menú al hacer clic fuera
+    // Cerrar menús al hacer clic fuera
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
                 setIsMenuOpen(false);
             }
+            if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
+                setIsUserMenuOpen(false);
+            }
         };
 
         document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
-    }, [isMenuOpen]);
+    }, [isMenuOpen, isUserMenuOpen]);
 
     // Manejar cierre de sesión
     const handleLogout = () => {
         localStorage.removeItem("userData");
         setIsLoggedIn(false);
-        setIsMenuOpen(false);
+        setIsUserMenuOpen(false);
         window.location.href = "/";
     };
 
@@ -86,9 +91,7 @@ export default function Header() {
                 {/* Logo */}
                 <Link
                     href="/"
-                    className={`relative h-full ${
-                        isMobile ? "w-[70px]" : "w-36"
-                    } hover:opacity-90 transition-opacity`}
+                    className={`relative h-full ${isMobile ? "w-[70px]" : "w-36"} hover:opacity-90 transition-opacity`}
                 >
                     <Image
                         src={isMobile ? "/favicon.png" : "/logo.png"}
@@ -100,21 +103,14 @@ export default function Header() {
                 </Link>
 
                 {/* Barra de búsqueda */}
-                <Suspense
-                    fallback={
-                        <div className="w-full max-w-[500px] h-10 bg-gray-200 animate-pulse" />
-                    }
-                >
+                <Suspense fallback={<div className="w-full max-w-[500px] h-10 bg-gray-200 animate-pulse" />}>
                     <SearchBar />
                 </Suspense>
 
                 {/* Menú de navegación */}
                 <div className="relative ml-4" ref={menuRef}>
                     {isMobile ? (
-                        <button
-                            onClick={() => setIsMenuOpen(!isMenuOpen)}
-                            className="text-white focus:outline-none"
-                        >
+                        <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="text-white focus:outline-none">
                             <Menu className="h-6 w-6" />
                         </button>
                     ) : (
@@ -131,28 +127,30 @@ export default function Header() {
                                 </Link>
                             ))}
                             {isLoggedIn ? (
-                                <div className="relative group">
-                                    <button className="flex items-center gap-2 text-white">
-                                        <img
-                                            src="/user-avatar.png"
-                                            className="h-8 w-8 rounded-full"
-                                            alt="Perfil de usuario"
-                                        />
+                                <div className="relative" ref={userMenuRef}>
+                                    <button
+                                        onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                                        className="flex items-center gap-2 text-white focus:outline-none"
+                                    >
+                                        <img src="/user-avatar.png" className="h-8 w-8 rounded-full" alt="Perfil de usuario" />
                                     </button>
-                                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg hidden group-hover:block">
-                                        <Link
-                                            href="/account"
-                                            className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
-                                        >
-                                            Mi Cuenta
-                                        </Link>
-                                        <button
-                                            onClick={handleLogout}
-                                            className="w-full px-4 py-2 text-left text-gray-800 hover:bg-gray-100"
-                                        >
-                                            Cerrar Sesión
-                                        </button>
-                                    </div>
+
+                                    {isUserMenuOpen && (
+                                        <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg z-50">
+                                            <Link
+                                                href="/account"
+                                                className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
+                                            >
+                                                Mi Cuenta
+                                            </Link>
+                                            <button
+                                                onClick={handleLogout}
+                                                className="w-full px-4 py-2 text-left text-gray-800 hover:bg-gray-100"
+                                            >
+                                                Cerrar Sesión
+                                            </button>
+                                        </div>
+                                    )}
                                 </div>
                             ) : (
                                 <Link
