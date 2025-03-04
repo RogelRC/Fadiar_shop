@@ -120,7 +120,7 @@ export default function Header() {
                                     key={link.href}
                                     href={link.href}
                                     className={`text-sm text-white transition-colors hover:text-blue-400 ${
-                                        pathname === link.href ? "font-extrabold" : ""
+                                        pathname.startsWith(link.href) ? "font-extrabold" : ""
                                     }`}
                                 >
                                     {link.name}
@@ -139,13 +139,17 @@ export default function Header() {
                                         <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg z-50">
                                             <Link
                                                 href="/account"
-                                                className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
+                                                className={`text-sm text-white transition-colors hover:text-blue-400 ${
+                                                    pathname === "/account" ? "font-extrabold" : ""
+                                                }`}
                                             >
                                                 Mi Cuenta
                                             </Link>
                                             <button
                                                 onClick={handleLogout}
-                                                className="w-full px-4 py-2 text-left text-gray-800 hover:bg-gray-100"
+                                                className={`text-sm text-white transition-colors hover:text-blue-400 ${
+                                                    pathname === "/account" ? "font-extrabold" : ""
+                                                }`}
                                             >
                                                 Cerrar Sesión
                                             </button>

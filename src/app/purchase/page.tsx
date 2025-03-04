@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import {router} from "next/client";
 
 const provinciasCuba = {
     "Pinar del Río": [
@@ -88,13 +89,49 @@ export default function Purchase() {
     const [cartError, setCartError] = useState("");
     const [total, setTotal] = useState(0);
 
+    const [error, setError] = useState<string | null>(null);
+
     const API = process.env.NEXT_PUBLIC_API;
 
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        console.log("Datos enviados:", { domicilio, ...formData });
+    const handleBuy = async () => {
+        try {
+            const userData = JSON.parse(localStorage.getItem("userData") || "{}");
+
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API}/add_order`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    id_user_action: userData.userId,
+                    gestor_id: userData.userId,
+                    ci_cliente: userData.ci,
+                    name_cliente: userData.name,
+                    last_names: `${userData.last1} ${userData.last2}`,
+                    cellphone_cliente: userData.cell1,
+                    order_code: userData.nextOrderCode,
+                    provincia: "La Habana",
+                    municipio: "El Cerro",
+                    direccion_exacta: null
+                }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || "Error al comprar");
+            }
+
+            // Actualizamos el userData con el nuevo nextOrderCode y lo guardamos en localStorage
+            const updatedUserData = { ...userData, nextOrderCode: data.nextOrderCode };
+            localStorage.setItem("userData", JSON.stringify(updatedUserData));
+
+            console.log(data);
+            await router.push("/");
+        } catch (err) {
+            setError(err instanceof Error ? err.message : "Error desconocido");
+        }
     };
+
 
     useEffect(() => {
         const fetchCart = async () => {
@@ -173,7 +210,7 @@ export default function Purchase() {
                     )}
                 </div>
 
-                <form className="mt-10 space-y-8" onSubmit={handleSubmit}>
+                <form className="mt-10 space-y-8">
                     <div className="space-y-6">
                         {/* Switch de Domicilio */}
                         <div className="flex items-center gap-4">
@@ -263,6 +300,7 @@ export default function Purchase() {
 
                     <button
                         type="submit"
+                        onClick={handleBuy}
                         className="w-full bg-[#022953] text-white py-3 px-4 rounded-md hover:bg-[#011a3a] transition-colors"
                     >
                         {domicilio ? 'Confirmar domicilio' : 'Confirmar recogida'}
