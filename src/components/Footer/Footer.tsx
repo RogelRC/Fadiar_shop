@@ -14,15 +14,14 @@ export default function Footer() {
                         width={150}
                         height={150}
                     />
-                    <p className="text-sm">
-                        En este texto se debe explicar brevemente la empresa, cual es su finalidad, los servicios más importantes que se ofrecen, entre otras cuestiones la la la.
-                    </p>
                 </div>
                 <div className="flex flex-col w-full md:w-1/4 gap-4">
                     <h1 className="font-bold text-2xl">CONTÁCTANOS</h1>
-                    <span className="text-sm">+53 5XXXXXXX</span>
-                    <span className="text-sm">Dirección ficticia 4 Atlantic Ave. Brooklyn, NY 11 201. Ecco Spa.</span>
-                    <span className="text-sm">test@gmail.com</span>
+                    <span className="text-sm">+53 63513228</span>
+                    <span className="text-sm">Calle 29F entre 114 y 114A, Edificio 11413
+                        Ciudad Libertad, Marianao, La Habana, Cuba
+                        Almacén 9A (dentro de la Empresa de Abastecimiento y Distribución de Medios para la Educación - ENAME)</span>
+                    <span className="text-sm">fadiar.soporte@gmail.com</span>
                 </div>
                 <div className="flex flex-col w-full md:w-1/4 gap-4 items-center">
                     <h1 className="font-bold text-2xl">SÍGUENOS</h1>
@@ -38,7 +37,19 @@ export default function Footer() {
                         </a>
                     </div>
                 </div>
+                
+                {/* Mapa agregado aquí */}
+                <div className="w-full max-w-6xl mx-auto">
+                    <iframe
+                        src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d1588.392229538395!2d-82.43530361034315!3d23.08587264326781!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1ses!2sus!4v1741330516071!5m2!1ses!2sus"
+                        className="w-full h-[450px] border-0 rounded-lg"
+                        allowFullScreen
+                        loading="lazy"
+                        referrerPolicy="no-referrer-when-downgrade"
+                    />
+                </div>
             </div>
+            
             <hr className="border-white border-t mx-4 md:mx-20" />
             <div className="text-white text-sm text-right p-2 bg-[#022953] px-4 md:px-10">
                 Neon Global. v1.0 ©2024

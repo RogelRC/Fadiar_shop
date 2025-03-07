@@ -16,13 +16,11 @@ export default function Header() {
     const menuRef = useRef<HTMLDivElement>(null);
     const userMenuRef = useRef<HTMLDivElement>(null);
 
-    // Verificar estado de autenticación
     useEffect(() => {
         const userData = localStorage.getItem("userData");
         setIsLoggedIn(!!userData);
-    }, [pathname]); // Actualizar al cambiar de ruta
+    }, [pathname]);
 
-    // Detectar tamaño de pantalla
     useEffect(() => {
         const mediaQuery = window.matchMedia("(max-width: 640px)");
         setIsMobile(mediaQuery.matches);
@@ -33,7 +31,6 @@ export default function Header() {
         return () => mediaQuery.removeEventListener("change", handler);
     }, []);
 
-    // Cerrar menús al hacer clic fuera
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
@@ -48,7 +45,6 @@ export default function Header() {
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, [isMenuOpen, isUserMenuOpen]);
 
-    // Manejar cierre de sesión
     const handleLogout = () => {
         localStorage.removeItem("userData");
         setIsLoggedIn(false);
@@ -56,7 +52,6 @@ export default function Header() {
         window.location.href = "/";
     };
 
-    // Enlaces de navegación
     const navLinks = [
         { name: "Inicio", href: "/" },
         { name: "Productos", href: "/products" },
@@ -64,7 +59,6 @@ export default function Header() {
         { name: "Mis Pedidos", href: "/orders", authOnly: true },
     ];
 
-    // Filtrar enlaces según autenticación
     const filteredLinks = navLinks.filter(
         (link) => !link.authOnly || (link.authOnly && isLoggedIn)
     );
@@ -95,7 +89,7 @@ export default function Header() {
                 >
                     <Image
                         src={isMobile ? "/favicon.png" : "/logo.png"}
-                        alt="Fadiar Logo"
+                        alt="Logo"
                         fill
                         priority
                         className="object-contain"
@@ -103,16 +97,56 @@ export default function Header() {
                 </Link>
 
                 {/* Barra de búsqueda */}
-                <Suspense fallback={<div className="w-full max-w-[500px] h-10 bg-gray-200 animate-pulse" />}>
-                    <SearchBar />
-                </Suspense>
+                <div className="flex-1 mx-4 max-w-[500px]">
+                    <Suspense fallback={<div className="w-full h-10 bg-gray-200 animate-pulse" />}>
+                        <SearchBar />
+                    </Suspense>
+                </div>
 
                 {/* Menú de navegación */}
-                <div className="relative ml-4" ref={menuRef}>
+                <div className="relative" ref={menuRef}>
                     {isMobile ? (
-                        <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="text-white focus:outline-none">
-                            <Menu className="h-6 w-6" />
-                        </button>
+                        <>
+                            <button
+                                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                                className="text-white focus:outline-none"
+                            >
+                                <Menu className="h-6 w-6" />
+                            </button>
+
+                            {/* Menú desplegable móvil */}
+                            {isMenuOpen && (
+                                <div className="absolute top-full right-0 mt-2 w-48 bg-black rounded-lg shadow-lg z-50">
+                                    {filteredLinks.map((link) => (
+                                        <Link
+                                            key={link.href}
+                                            href={link.href}
+                                            className={`block px-4 py-3 text-sm text-white transition-colors hover:bg-gray-800 ${
+                                                pathname === link.href ? "font-extrabold bg-gray-800" : ""
+                                            }`}
+                                        >
+                                            {link.name}
+                                        </Link>
+                                    ))}
+                                    {isLoggedIn ? (
+                                        <button
+                                            onClick={handleLogout}
+                                            className="block w-full px-4 py-3 text-left text-sm text-white hover:bg-gray-800"
+                                        >
+                                            Cerrar Sesión
+                                        </button>
+                                    ) : (
+                                        <Link
+                                            href="/login"
+                                            className="block px-4 py-3 text-sm text-white hover:bg-gray-800"
+                                            onClick={() => setIsMenuOpen(false)}
+                                        >
+                                            Autenticarse
+                                        </Link>
+                                    )}
+                                </div>
+                            )}
+                        </>
                     ) : (
                         <nav className="flex items-center gap-6">
                             {filteredLinks.map((link) => (
@@ -120,7 +154,7 @@ export default function Header() {
                                     key={link.href}
                                     href={link.href}
                                     className={`text-sm text-white transition-colors hover:text-blue-400 ${
-                                        pathname.startsWith(link.href) ? "font-extrabold" : ""
+                                        pathname === link.href ? "font-extrabold" : ""
                                     }`}
                                 >
                                     {link.name}
@@ -132,24 +166,19 @@ export default function Header() {
                                         onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                                         className="flex items-center gap-2 text-white focus:outline-none"
                                     >
-                                        <img src="/user-avatar.png" className="h-8 w-8 rounded-full" alt="Perfil de usuario" />
+                                        <img src="/user-avatar.png" className="h-8 w-8 rounded-full" alt="Perfil" />
                                     </button>
-
                                     {isUserMenuOpen && (
-                                        <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg z-50">
+                                        <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg z-50 p-2">
                                             <Link
                                                 href="/account"
-                                                className={`text-sm text-white transition-colors hover:text-blue-400 ${
-                                                    pathname === "/account" ? "font-extrabold" : ""
-                                                }`}
+                                                className="block px-4 py-2 text-blue-500 hover:text-blue-600"
                                             >
                                                 Mi Cuenta
                                             </Link>
                                             <button
                                                 onClick={handleLogout}
-                                                className={`text-sm text-white transition-colors hover:text-blue-400 ${
-                                                    pathname === "/account" ? "font-extrabold" : ""
-                                                }`}
+                                                className="block w-full px-4 py-2 text-left text-blue-500 hover:text-blue-600"
                                             >
                                                 Cerrar Sesión
                                             </button>
@@ -165,38 +194,6 @@ export default function Header() {
                                 </Link>
                             )}
                         </nav>
-                    )}
-
-                    {/* Menú desplegable móvil */}
-                    {isMenuOpen && isMobile && (
-                        <div className="absolute top-10 right-0 mt-2 w-40 bg-black rounded-lg shadow-lg z-50">
-                            {filteredLinks.map((link) => (
-                                <Link
-                                    key={link.href}
-                                    href={link.href}
-                                    className="block px-4 py-2 text-white hover:bg-gray-800"
-                                    onClick={() => setIsMenuOpen(false)}
-                                >
-                                    {link.name}
-                                </Link>
-                            ))}
-                            {isLoggedIn ? (
-                                <button
-                                    onClick={handleLogout}
-                                    className="block w-full px-4 py-2 text-white hover:bg-gray-800 text-left"
-                                >
-                                    Cerrar Sesión
-                                </button>
-                            ) : (
-                                <Link
-                                    href="/login"
-                                    className="block px-4 py-2 text-white hover:bg-gray-800"
-                                    onClick={() => setIsMenuOpen(false)}
-                                >
-                                    Autenticarse
-                                </Link>
-                            )}
-                        </div>
                     )}
                 </div>
             </div>

@@ -51,114 +51,114 @@ export default function TopSells() {
     }, []);
 
     if (products.length === 0) {
-        return <div className="text-center text-white">Cargando productos...</div>;
+        return <div className="text-center text-white p-8">Cargando productos...</div>;
     }
 
     return (
         <div
-            className="flex flex-col gap-6 w-full h-[90vh] relative"
+            className="flex flex-col min-h-screen relative bg-cover bg-center"
             style={{
                 backgroundImage: "url('/background.jpeg')",
-                backgroundSize: "cover",
-                backgroundPosition: "center",
             }}
         >
-            <div className="flex absolute top-[15%] bottom-[5%] left-[50%] w-[1px] bg-white z-50"></div>
-
             {/* Header */}
-            <div className="flex w-full h-[10vh] px-14 pt-2 text-white font-bold">
-                <h1 className="flex w-full h-full text-5xl">Productos destacados</h1>
-                <Link href="/products" className="flex w-full h-full justify-end items-center hover:text-blue-300">
-                    Ver más {">"}
+            <div className="container mx-auto px-4 lg:px-8 py-6 flex flex-col md:flex-row justify-between items-start md:items-center">
+                <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 md:mb-0">
+                    Productos destacados
+                </h1>
+                <Link
+                    href="/products"
+                    className="text-white hover:text-blue-300 transition-colors duration-300 flex items-center gap-2 group"
+                >
+                    Ver más
+                    <span className="group-hover:translate-x-1 transition-transform duration-300">&gt;</span>
                 </Link>
             </div>
 
-            <div className="flex w-full h-[80vh]">
-                {/* Lista de Products */}
-                <Tabs defaultValue={products[0]?.id.toString()} className="w-1/2 h-full justify-items-center">
-                    <TabsList className="flex flex-col gap-4 w-2/3 h-full bg-transparent">
-                        {products.map((product) => (
-                            <TabsTrigger
-                                key={product.id}
-                                value={product.id.toString()}
-                                className="flex items-center gap-4 p-2 w-full h-36 group"
-                                onClick={() => {
-                                    setSelectedProduct(product);
-                                    setIsExpanded(false);
-                                }}
-                            >
-                                <div className="flex justify-center w-1/2">
-                                    <span className="text-lg font-bold text-white group-data-[state=active]:text-[#022953]">
-                                        {product.name}
-                                    </span>
-                                </div>
-                                <div className="relative w-1/2 h-full">
-                                    <Image
-                                        loader={customLoader}
-                                        src={`https://app.fadiar.com/api/${product.img}`}
-                                        alt={product.name}
-                                        fill
-                                        className="rounded-lg object-contain"
-                                    />
-                                </div>
-                            </TabsTrigger>
-                        ))}
-                    </TabsList>
-                </Tabs>
+            <div className="container mx-auto px-4 lg:px-8 flex-1 flex flex-col lg:flex-row gap-8 py-8">
+                {/* Product List */}
+                <div className="w-full lg:w-1/2">
+                    <Tabs defaultValue={products[0]?.id.toString()}>
+                        <TabsList className="grid grid-cols-1 gap-4 bg-transparent">
+                            {products.map((product) => (
+                                <TabsTrigger
+                                    key={product.id}
+                                    value={product.id.toString()}
+                                    className={`group relative h-32 lg:h-36 w-full rounded-xl p-4 transition-all duration-300 ${
+                                        selectedProduct?.id === product.id
+                                            ? "bg-white/20 backdrop-blur-sm"
+                                            : "bg-transparent hover:bg-white/10"
+                                    }`}
+                                    onClick={() => {
+                                        setSelectedProduct(product);
+                                        setIsExpanded(false);
+                                    }}
+                                >
+                                    <div className="flex items-center justify-between w-full h-full gap-4">
+                                        <span
+                                            className={`text-lg font-bold ${
+                                                selectedProduct?.id === product.id
+                                                    ? "text-[#022953]"
+                                                    : "text-white"
+                                            }`}
+                                        >
+                                            {product.name}
+                                        </span>
+                                        <div className="relative w-24 h-24 lg:w-32 lg:h-32">
+                                            <Image
+                                                loader={customLoader}
+                                                src={`https://app.fadiar.com/api/${product.img}`}
+                                                alt={product.name}
+                                                fill
+                                                className="object-contain transition-transform duration-300 group-hover:scale-105"
+                                            />
+                                        </div>
+                                    </div>
+                                </TabsTrigger>
+                            ))}
+                        </TabsList>
+                    </Tabs>
+                </div>
 
-                {/* Detalle del producto */}
+                {/* Product Details */}
                 {selectedProduct && (
-                    <div className="w-1/2 flex flex-col items-center text-lg text-white p-8">
-                        <div className="relative w-64 h-64 rounded-2xl overflow-hidden">
+                    <div className="w-full lg:w-1/2 flex flex-col items-center text-white p-4 lg:p-8">
+                        <div className="relative w-full max-w-xs aspect-square rounded-2xl overflow-hidden bg-white/10 backdrop-blur-sm">
                             <Image
                                 loader={customLoader}
                                 src={`https://app.fadiar.com/api/${selectedProduct.img}`}
                                 alt={selectedProduct.name}
                                 fill
-                                className="object-contain"
+                                className="object-contain p-4"
                             />
                         </div>
-                        <h2 className="mt-6 text-2xl font-bold">{selectedProduct.name}</h2>
-                        <div className="mt-2 px-14 pt-10 relative w-full">
-                            <div className="grid grid-cols-2 gap-x-8 text-left font-bold">
-                                {/* Columna izquierda */}
-                                <div className="space-y-4">
-                                    {selectedProduct.description
-                                        .replace(/• /g, "\n")
-                                        .split('\n')
-                                        .filter((line, index) => isExpanded || index < 6)
-                                        .slice(0, Math.ceil((isExpanded ? selectedProduct.description.split('\n').length : 6) / 2))
-                                        .map((line, index) => (
-                                            <div key={index} className="flex items-start gap-2">
-                                                <span className="text-white shrink-0">•</span>
-                                                <span>{line}</span>
-                                            </div>
-                                        ))}
-                                </div>
-
-                                {/* Columna derecha */}
-                                <div className="space-y-4">
-                                    {selectedProduct.description
-                                        .replace(/• /g, "\n")
-                                        .split('\n')
-                                        .filter((line, index) => isExpanded || index < 6)
-                                        .slice(Math.ceil((isExpanded ? selectedProduct.description.split('\n').length : 6) / 2))
-                                        .map((line, index) => (
-                                            <div key={index} className="flex items-start gap-2">
-                                                <span className="text-white shrink-0">•</span>
-                                                <span>{line}</span>
-                                            </div>
-                                        ))}
-                                </div>
+                        <h2 className="mt-6 text-2xl lg:text-3xl font-bold text-center">
+                            {selectedProduct.name}
+                        </h2>
+                        <div className="mt-6 w-full relative">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm lg:text-base">
+                                {selectedProduct.description
+                                    .replace(/• /g, "\n")
+                                    .split('\n')
+                                    .filter((line, index) => isExpanded || index < 6)
+                                    .map((line, index) => (
+                                        <div
+                                            key={index}
+                                            className="flex items-start gap-2 bg-white/5 rounded-lg p-3 backdrop-blur-sm"
+                                        >
+                                            <span className="text-blue-300 shrink-0">•</span>
+                                            <span className="flex-1">{line}</span>
+                                        </div>
+                                    ))}
                             </div>
 
                             {!isExpanded && selectedProduct.description.split('\n').length > 6 && (
-                                <span
-                                    className="absolute bottom-0 right-0 cursor-pointer text-blue-300 hover:text-blue-400"
+                                <button
+                                    className="mt-4 w-full text-center text-blue-300 hover:text-blue-400 transition-colors duration-300"
                                     onClick={() => setIsExpanded(true)}
                                 >
-                                    ...
-                                </span>
+                                    Mostrar más características
+                                </button>
                             )}
                         </div>
                     </div>
