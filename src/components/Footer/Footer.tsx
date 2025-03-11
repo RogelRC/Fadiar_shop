@@ -23,6 +23,7 @@ export default function Footer() {
                         Almacén 9A (dentro de la Empresa de Abastecimiento y Distribución de Medios para la Educación - ENAME)</span>
                     <span className="text-sm">fadiar.soporte@gmail.com</span>
                 </div>
+                {/*
                 <div className="flex flex-col w-full md:w-1/4 gap-4 items-center">
                     <h1 className="font-bold text-2xl">SÍGUENOS</h1>
                     <div className="flex space-x-5">
@@ -37,6 +38,7 @@ export default function Footer() {
                         </a>
                     </div>
                 </div>
+                */}
                 
                 {/* Mapa agregado aquí */}
                 <div className="w-full max-w-6xl mx-auto">
@@ -50,10 +52,12 @@ export default function Footer() {
                 </div>
             </div>
             
+            {/*
             <hr className="border-white border-t mx-4 md:mx-20" />
             <div className="text-white text-sm text-right p-2 bg-[#022953] px-4 md:px-10">
                 Neon Global. v1.0 ©2024
             </div>
+            */}
         </>
     );
 }

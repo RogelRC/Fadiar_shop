@@ -54,14 +54,24 @@ export default function Header() {
 
     const navLinks = [
         { name: "Inicio", href: "/" },
-        { name: "Productos", href: "/products" },
-        { name: "Mi Cuenta", href: "/account", authOnly: true },
-        { name: "Mis Pedidos", href: "/orders", authOnly: true },
+        { name: "Productos", href: "/products/" },
+        { name: "Mi Cuenta", href: "/account/", authOnly: true },
+        { name: "Mis Pedidos", href: "/orders/", authOnly: true },
     ];
 
     const filteredLinks = navLinks.filter(
         (link) => !link.authOnly || (link.authOnly && isLoggedIn)
     );
+
+    const isActiveLink = (href: string) => {
+        if (href === "/products/" && pathname.startsWith("/details/")) {
+            return true;
+        }
+        if (href === "/orders/" && pathname.startsWith("/ordersDetails/")) {
+            return true;
+        }
+        return pathname === href;
+    };
 
     return (
         <header className="fixed top-0 w-full h-[10vh] min-h-[80px] z-50 bg-black">
@@ -122,7 +132,7 @@ export default function Header() {
                                             key={link.href}
                                             href={link.href}
                                             className={`block px-4 py-3 text-sm text-white transition-colors hover:bg-gray-800 ${
-                                                pathname === link.href ? "font-extrabold bg-gray-800" : ""
+                                                isActiveLink(link.href) ? "font-extrabold bg-blue-600" : ""
                                             }`}
                                         >
                                             {link.name}
@@ -154,7 +164,7 @@ export default function Header() {
                                     key={link.href}
                                     href={link.href}
                                     className={`text-sm text-white transition-colors hover:text-blue-400 ${
-                                        pathname === link.href ? "font-extrabold" : ""
+                                        isActiveLink(link.href) ? "font-extrabold" : ""
                                     }`}
                                 >
                                     {link.name}

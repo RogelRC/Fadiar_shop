@@ -83,29 +83,41 @@ function isValidProvincia(key: string): key is ProvinciaKey {
     return key in provinciasCuba;
 }
 
-const storedUserData = localStorage.getItem("userData");
+const storedUserData = typeof window !== "undefined" ? localStorage.getItem("userData") : null;
 const parsedData = storedUserData ? JSON.parse(storedUserData) : null;
 
 export default function Purchase() {
-    const router = useRouter();  // Añadir esto
+    const router = useRouter();
 
     const [formData, setFormData] = useState({
         provincia: "",
         municipio: "",
-        address: parsedData.addres
+        address: ""
     });
     const [domicilio, setDomicilio] = useState(false);
     const [cart, setCart] = useState<any[]>([]);
     const [loadingCart, setLoadingCart] = useState(true);
     const [cartError, setCartError] = useState("");
     const [total, setTotal] = useState(0);
-    const [targetCurrency, setTargetCurrency] = useState("USD"); // Nuevo estado para moneda
-    const [exchangeRates, setExchangeRates] = useState<any[]>([]); // Tasas de cambio
-
-
+    const [targetCurrency, setTargetCurrency] = useState("USD");
+    const [exchangeRates, setExchangeRates] = useState<any[]>([]);
     const [error, setError] = useState<string | null>(null);
 
     const API = process.env.NEXT_PUBLIC_API;
+
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            const storedUserData = localStorage.getItem("userData");
+            if (storedUserData) {
+                const parsedData = JSON.parse(storedUserData);
+                setFormData(prevState => ({
+                    ...prevState,
+                    address: parsedData.addres || ""
+                }));
+            }
+        }
+    }, []);
+
 
     interface CartItem {
         id: number;
@@ -136,7 +148,7 @@ export default function Purchase() {
                     order_code: userData.nextOrderCode,
                     provincia: formData.provincia === null || formData.provincia === "" ? null : formData.provincia,
                     municipio: formData.municipio === null || formData.municipio === "" ? null : formData.municipio,
-                    direccion_exacta: formData.address === null || formData.address === "" ? null : formData.address
+                    direccionExacta: formData.address === null || formData.address === "" ? null : formData.address
                 }),
             });
 
