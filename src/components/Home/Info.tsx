@@ -77,9 +77,9 @@ export default function Info() {
                                 Atención personalizada 24/7
                             </li>
                         </ul>
-                        <button className="bg-[#022953] text-white px-8 py-3 rounded-lg hover:bg-[#011a3a] transition-colors">
+                        {/* <button className="bg-[#022953] text-white px-8 py-3 rounded-lg hover:bg-[#011a3a] transition-colors">
                             Conoce más
-                        </button>
+                        </button> */}
                     </div>
                 </div>
             </div>
