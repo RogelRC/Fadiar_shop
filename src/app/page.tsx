@@ -15,7 +15,7 @@ export default function Home() {
 
             <Info />
 
-            <div className="w-full h-2 bg-[#022953] my-12" />
+            {/*<div className="w-full h-2 bg-[#022953] my-12" />*/}
 
             {/*
             <Suspense fallback={<div>Cargando destacados...</div>}>
