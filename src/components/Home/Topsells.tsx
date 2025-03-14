@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface Product {
     id: number;
@@ -51,119 +52,139 @@ export default function TopSells() {
     }, []);
 
     if (products.length === 0) {
-        return <div className="text-center text-white p-8">Cargando productos...</div>;
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+            </div>
+        );
     }
 
     return (
-        <div
-            className="flex flex-col min-h-screen relative bg-cover bg-center"
-            style={{
-                backgroundImage: "url('/background.jpeg')",
-            }}
-        >
-            {/* Header */}
-            <div className="container mx-auto px-4 lg:px-8 py-6 flex flex-col md:flex-row justify-between items-start md:items-center">
-                <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 md:mb-0">
-                    Productos destacados
-                </h1>
-                <Link
-                    href="/products"
-                    className="text-white hover:text-blue-300 transition-colors duration-300 flex items-center gap-2 group"
-                >
-                    Ver más
-                    <span className="group-hover:translate-x-1 transition-transform duration-300">&gt;</span>
-                </Link>
-            </div>
+        <section className="min-h-screen bg-gray-50 py-8">
+            <div className="container mx-auto px-4">
+                {/* Header */}
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+                    <h1 className="text-3xl font-bold text-[#022953]">Productos destacados</h1>
+                    <Link
+                        href="/products"
+                        className="text-[#022953] hover:text-blue-500 transition-colors duration-300"
+                    >
+                        Ver más
+                    </Link>
+                </div>
 
-            <div className="container mx-auto px-4 lg:px-8 flex-1 flex flex-col lg:flex-row gap-8 py-8">
-                {/* Product List */}
-                <div className="w-full lg:w-1/2">
-                    <Tabs defaultValue={products[0]?.id.toString()}>
-                        <TabsList className="grid grid-cols-1 gap-4 bg-transparent">
-                            {products.map((product) => (
-                                <TabsTrigger
-                                    key={product.id}
-                                    value={product.id.toString()}
-                                    className={`group relative h-32 lg:h-36 w-full rounded-xl p-4 transition-all duration-300 ${
-                                        selectedProduct?.id === product.id
-                                            ? "bg-white/20 backdrop-blur-sm"
-                                            : "bg-transparent hover:bg-white/10"
-                                    }`}
-                                    onClick={() => {
-                                        setSelectedProduct(product);
-                                        setIsExpanded(false);
-                                    }}
-                                >
-                                    <div className="flex items-center justify-between w-full h-full gap-4">
-                                        <span
-                                            className={`text-lg font-bold ${
-                                                selectedProduct?.id === product.id
-                                                    ? "text-[#022953]"
-                                                    : "text-white"
-                                            }`}
-                                        >
-                                            {product.name}
-                                        </span>
-                                        <div className="relative w-24 h-24 lg:w-32 lg:h-32">
+                <div className="flex flex-col lg:flex-row gap-6">
+                    {/* Product List */}
+                    <div className="w-full lg:w-1/2">
+                        <Tabs defaultValue={products[0]?.id.toString()} className="w-full">
+                            <TabsList className="grid grid-cols-1 gap-6 bg-transparent">
+                                {products.map((product) => (
+                                    <TabsTrigger
+                                        key={product.id}
+                                        value={product.id.toString()}
+                                        className={`bg-white rounded-xl shadow-md overflow-hidden transition-transform duration-300 ease-in-out hover:scale-110 flex flex-col h-full transform-gpu ${
+                                            selectedProduct?.id === product.id ? "border-2 border-[#022953]" : ""
+                                        }`}
+                                        onClick={() => {
+                                            setSelectedProduct(product);
+                                            setIsExpanded(false);
+                                        }}
+                                    >
+                                        <div className="relative h-48 w-full">
                                             <Image
                                                 loader={customLoader}
                                                 src={`https://app.fadiar.com/api/${product.img}`}
                                                 alt={product.name}
-                                                fill
-                                                className="object-contain transition-transform duration-300 group-hover:scale-105"
+                                                layout="fill"
+                                                objectFit="cover"
+                                                sizes="(max-width: 768px) 100vw, 50vw"
                                             />
                                         </div>
-                                    </div>
-                                </TabsTrigger>
-                            ))}
-                        </TabsList>
-                    </Tabs>
-                </div>
-
-                {/* Product Details */}
-                {selectedProduct && (
-                    <div className="w-full lg:w-1/2 flex flex-col items-center text-white p-4 lg:p-8">
-                        <div className="relative w-full max-w-xs aspect-square rounded-2xl overflow-hidden bg-white/10 backdrop-blur-sm">
-                            <Image
-                                loader={customLoader}
-                                src={`https://app.fadiar.com/api/${selectedProduct.img}`}
-                                alt={selectedProduct.name}
-                                fill
-                                className="object-contain p-4"
-                            />
-                        </div>
-                        <h2 className="mt-6 text-2xl lg:text-3xl font-bold text-center">
-                            {selectedProduct.name}
-                        </h2>
-                        <div className="mt-6 w-full relative">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm lg:text-base">
-                                {selectedProduct.description
-                                    .replace(/• /g, "\n")
-                                    .split('\n')
-                                    .filter((line, index) => isExpanded || index < 6)
-                                    .map((line, index) => (
-                                        <div
-                                            key={index}
-                                            className="flex items-start gap-2 bg-white/5 rounded-lg p-3 backdrop-blur-sm"
-                                        >
-                                            <span className="text-blue-300 shrink-0">•</span>
-                                            <span className="flex-1">{line}</span>
+                                        <div className="p-4 flex flex-col flex-1">
+                                            <div className="mb-2">
+                                                <h3 className="text-xl font-semibold text-[#022953]">{product.name}</h3>
+                                                <div className="flex justify-between items-center">
+                                                    <span className="text-sm text-gray-600">{product.brand}</span>
+                                                    <span className="text-sm text-gray-500">{product.model}</span>
+                                                </div>
+                                            </div>
+                                            <div className="mt-auto">
+                                                <button
+                                                    className="px-3 py-1 bg-[#022953] text-white rounded hover:bg-[#011a3a] text-sm"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setSelectedProduct(product);
+                                                        setIsExpanded(false);
+                                                    }}
+                                                >
+                                                    Ver detalles
+                                                </button>
+                                            </div>
                                         </div>
-                                    ))}
-                            </div>
-
-                            {!isExpanded && selectedProduct.description.split('\n').length > 6 && (
-                                <button
-                                    className="mt-4 w-full text-center text-blue-300 hover:text-blue-400 transition-colors duration-300"
-                                    onClick={() => setIsExpanded(true)}
-                                >
-                                    Mostrar más características
-                                </button>
-                            )}
-                        </div>
+                                    </TabsTrigger>
+                                ))}
+                            </TabsList>
+                        </Tabs>
                     </div>
-                )}
+
+                    {/* Product Details */}
+                    <AnimatePresence mode="wait">
+                        {selectedProduct && (
+                            <motion.div
+                                key={selectedProduct.id}
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -20 }}
+                                transition={{ duration: 0.3 }}
+                                className="w-full lg:w-1/2 flex flex-col items-center p-6 bg-white rounded-xl shadow-md"
+                            >
+                                <div className="relative w-full max-w-xs h-48 rounded-xl overflow-hidden">
+                                    <Image
+                                        loader={customLoader}
+                                        src={`https://app.fadiar.com/api/${selectedProduct.img}`}
+                                        alt={selectedProduct.name}
+                                        fill
+                                        className="object-cover"
+                                    />
+                                </div>
+                                <h2 className="mt-6 text-xl font-semibold text-[#022953] text-center">
+                                    {selectedProduct.name}
+                                </h2>
+                                <div className="mt-4 w-full">
+                                    {(() => {
+                                        const descriptionLines = selectedProduct.description
+                                            .replace(/• /g, "\n")
+                                            .split("\n")
+                                            .filter((line) => line.trim() !== "");
+                                        return (
+                                            <>
+                                                <div className="grid grid-cols-1 gap-2 text-sm text-gray-700">
+                                                    {descriptionLines
+                                                        .slice(0, isExpanded ? descriptionLines.length : 6)
+                                                        .map((line, index) => (
+                                                            <div key={index} className="flex items-start gap-2">
+                                                                <span className="text-[#022953]">•</span>
+                                                                <span>{line}</span>
+                                                            </div>
+                                                        ))}
+                                                </div>
+                                                {!isExpanded && descriptionLines.length > 6 && (
+                                                    <button
+                                                        className="mt-4 w-full px-3 py-1 bg-[#022953] text-white rounded hover:bg-[#011a3a] text-sm"
+                                                        onClick={() => setIsExpanded(true)}
+                                                    >
+                                                        Mostrar más características
+                                                    </button>
+                                                )}
+                                            </>
+                                        );
+                                    })()}
+                                </div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                </div>
             </div>
-        </div>
+        </section>
     );
 }

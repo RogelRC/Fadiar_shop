@@ -118,7 +118,6 @@ export default function Purchase() {
         }
     }, []);
 
-
     interface CartItem {
         id: number;
         brand: string;
@@ -130,8 +129,12 @@ export default function Purchase() {
         convertedCurrency?: string;
     }
 
-
     const handleBuy = async () => {
+        if (!formData.provincia || !formData.municipio || (domicilio && !formData.address)) {
+            setError("Por favor, llene todos los campos.");
+            return;
+        }
+
         try {
             const userData = JSON.parse(localStorage.getItem("userData") || "{}");
 
@@ -164,13 +167,11 @@ export default function Purchase() {
             const updatedUserData = { ...userData, nextOrderCode: data.nextOrderCode };
             localStorage.setItem("userData", JSON.stringify(updatedUserData));
 
-
             router.push("/products");
         } catch (err) {
             setError(err instanceof Error ? err.message : "Error desconocido");
         }
     };
-
 
     useEffect(() => {
         const fetchCart = async () => {
@@ -233,7 +234,6 @@ export default function Purchase() {
                 });
 
                 setCart(processedCart || []); // Asegurar array vacío si es undefined
-
 
                 // Calcular total
                 const newTotal = (processedCart || []).reduce(

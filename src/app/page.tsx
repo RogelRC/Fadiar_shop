@@ -5,6 +5,7 @@ import Slideshow from "@/components/Home/Slideshow";
 import Info from "@/components/Home/Info";
 import Carousel from "@/components/Home/Carousel";
 import Topsells from "@/components/Home/Topsells";
+import Footer from '@/components/Footer/Footer';
 
 export default function Home() {
     return (
@@ -21,13 +22,15 @@ export default function Home() {
             <Suspense fallback={<div>Cargando destacados...</div>}>
                 <Carousel/>
             </Suspense>
-
-            <div className="hidden lg:block">
+            
+            <div>
                 <Suspense>
                     <Topsells/>
                 </Suspense>
             </div>
             */}
+
+            <Footer/>
         </>
     );
 }

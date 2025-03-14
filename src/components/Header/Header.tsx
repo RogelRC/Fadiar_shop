@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { Suspense, useState, useEffect, useRef } from "react";
 import SearchBar from "./SearchBar";
 import { Menu } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function Header() {
     const pathname = usePathname();
@@ -125,37 +126,46 @@ export default function Header() {
                             </button>
 
                             {/* Menú desplegable móvil */}
-                            {isMenuOpen && (
-                                <div className="absolute top-full right-0 mt-2 w-48 bg-black rounded-lg shadow-lg z-50">
-                                    {filteredLinks.map((link) => (
-                                        <Link
-                                            key={link.href}
-                                            href={link.href}
-                                            className={`block px-4 py-3 text-sm text-white transition-colors hover:bg-gray-800 ${
-                                                isActiveLink(link.href) ? "font-extrabold bg-blue-600" : ""
-                                            }`}
-                                        >
-                                            {link.name}
-                                        </Link>
-                                    ))}
-                                    {isLoggedIn ? (
-                                        <button
-                                            onClick={handleLogout}
-                                            className="block w-full px-4 py-3 text-left text-sm text-white hover:bg-gray-800"
-                                        >
-                                            Cerrar Sesión
-                                        </button>
-                                    ) : (
-                                        <Link
-                                            href="/login"
-                                            className="block px-4 py-3 text-sm text-white hover:bg-gray-800"
-                                            onClick={() => setIsMenuOpen(false)}
-                                        >
-                                            Autenticarse
-                                        </Link>
-                                    )}
-                                </div>
-                            )}
+                            <AnimatePresence>
+                                {isMenuOpen && (
+                                    <motion.div
+                                        key="menu"
+                                        initial={{ opacity: 0, y: -20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -20 }}
+                                        transition={{ duration: 0.3 }}
+                                        className="absolute top-full right-0 mt-2 w-48 bg-black rounded-lg shadow-lg z-50"
+                                    >
+                                        {filteredLinks.map((link) => (
+                                            <Link
+                                                key={link.href}
+                                                href={link.href}
+                                                className={`block px-4 py-3 text-sm text-white transition-colors hover:bg-gray-800 ${
+                                                    isActiveLink(link.href) ? "font-extrabold bg-blue-600" : ""
+                                                }`}
+                                            >
+                                                {link.name}
+                                            </Link>
+                                        ))}
+                                        {isLoggedIn ? (
+                                            <button
+                                                onClick={handleLogout}
+                                                className="block w-full px-4 py-3 text-left text-sm text-white hover:bg-gray-800"
+                                            >
+                                                Cerrar Sesión
+                                            </button>
+                                        ) : (
+                                            <Link
+                                                href="/login"
+                                                className="block px-4 py-3 text-sm text-white hover:bg-gray-800"
+                                                onClick={() => setIsMenuOpen(false)}
+                                            >
+                                                Autenticarse
+                                            </Link>
+                                        )}
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
                         </>
                     ) : (
                         <nav className="flex items-center gap-6">
@@ -178,22 +188,31 @@ export default function Header() {
                                     >
                                         <img src="/user-avatar.png" className="h-8 w-8 rounded-full" alt="Perfil" />
                                     </button>
-                                    {isUserMenuOpen && (
-                                        <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg z-50 p-2">
-                                            <Link
-                                                href="/account"
-                                                className="block px-4 py-2 text-blue-500 hover:text-blue-600"
+                                    <AnimatePresence>
+                                        {isUserMenuOpen && (
+                                            <motion.div
+                                                key="userMenu"
+                                                initial={{ opacity: 0, y: -20 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                exit={{ opacity: 0, y: -20 }}
+                                                transition={{ duration: 0.3 }}
+                                                className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg z-50 p-2"
                                             >
-                                                Mi Cuenta
-                                            </Link>
-                                            <button
-                                                onClick={handleLogout}
-                                                className="block w-full px-4 py-2 text-left text-blue-500 hover:text-blue-600"
-                                            >
-                                                Cerrar Sesión
-                                            </button>
-                                        </div>
-                                    )}
+                                                <Link
+                                                    href="/account"
+                                                    className="block px-4 py-2 text-blue-500 hover:text-blue-600"
+                                                >
+                                                    Mi Cuenta
+                                                </Link>
+                                                <button
+                                                    onClick={handleLogout}
+                                                    className="block w-full px-4 py-2 text-left text-blue-500 hover:text-blue-600"
+                                                >
+                                                    Cerrar Sesión
+                                                </button>
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
                                 </div>
                             ) : (
                                 <Link

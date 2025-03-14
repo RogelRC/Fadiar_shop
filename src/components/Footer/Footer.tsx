@@ -8,20 +8,22 @@ export default function Footer() {
         <>
             <div className="flex flex-wrap w-full bg-[#022953] text-white p-10 gap-10">
                 <div className="flex flex-col gap-10 w-full md:w-1/2">
-                    <Image
-                        src={"/logo.png"}
-                        alt="Fadiar Logo"
-                        width={150}
-                        height={150}
-                    />
+                    <Link href="/">
+                        <Image
+                            src={"/logo.png"}
+                            alt="Fadiar Logo"
+                            width={150}
+                            height={150}
+                        />
+                    </Link>
                 </div>
                 <div className="flex flex-col w-full md:w-1/4 gap-4">
                     <h1 className="font-bold text-2xl">CONTÁCTANOS</h1>
-                    <span className="text-sm">+53 63513228</span>
+                    <a href="tel:+5363513228" className="text-sm">+53 63513228</a>
                     <span className="text-sm">Calle 29F entre 114 y 114A, Edificio 11413
                         Ciudad Libertad, Marianao, La Habana, Cuba
                         Almacén 9A (dentro de la Empresa de Abastecimiento y Distribución de Medios para la Educación - ENAME)</span>
-                    <span className="text-sm">fadiar.soporte@gmail.com</span>
+                    <a href="mailto:fadiar.soporte@gmail.com" className="text-sm">fadiar.soporte@gmail.com</a>
                 </div>
                 {/*
                 <div className="flex flex-col w-full md:w-1/4 gap-4 items-center">
